@@ -69,6 +69,14 @@ public class Testing {
 				Page page = link[i].getPage();
 				if(page!=null) {
 					//System.out.println("Link: "+link[i].toURL()+", size: "+link.length);
+					Text[] text = page.getWords();
+					if(text==null)
+						continue;
+					System.out.println("Text: ");
+					for(int j=0; j<text.length; j++) {
+						System.out.print(text[j].toString()+", ");
+					}
+					System.out.println();
 					deepScan(page.getLinks());
 				}
 				/*if(link[i].getStatus()==LinkEvent.DOWNLOADED || link[i].getStatus()==LinkEvent.VISITED) {
