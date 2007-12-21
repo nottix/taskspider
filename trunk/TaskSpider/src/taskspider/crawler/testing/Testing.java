@@ -1,6 +1,6 @@
 /**
  * TaskSpider Testing class
- * @author Simone Notargiacomo
+ * @author Simone Notargiacomo, Giuseppe Schipani
  */
 package taskspider.crawler.testing;
 
