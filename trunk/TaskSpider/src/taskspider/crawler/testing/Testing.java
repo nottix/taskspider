@@ -9,7 +9,7 @@ import websphinx.*;
 import java.net.*;
 
 /**
- * @author Simone Notargiacomo
+ * @author Simone Notargiacomo, Giuseppe Schipani
  */
 public class Testing {
 
