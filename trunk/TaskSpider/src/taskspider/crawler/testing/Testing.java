@@ -70,12 +70,16 @@ public class Testing {
 				if(page!=null) {
 					//System.out.println("Link: "+link[i].toURL()+", size: "+link.length);
 					Text[] text = page.getWords();
+					Region[] region = page.getTokens();
 					if(text==null)
 						continue;
 					System.out.println("Text: ");
 					for(int j=0; j<text.length; j++) {
 						System.out.print(text[j].toString()+", ");
 					}
+//					for(int j=0; j<text.length; j++) {
+//						System.out.print(region[j].toString()+", ");
+//					}
 					System.out.println();
 					deepScan(page.getLinks());
 				}
