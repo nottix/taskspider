@@ -20,7 +20,7 @@ public class Testing {
 		Crawler crawler = new Crawler();
 		try {
 			int num=0, out=0;
-			crawler.addRoot(new Link("http://www.docmirror.net/it/linux/howto/apps/Alsa-sound/"));
+			crawler.addRoot(new Link("http://www.google.com"));
 			crawler.addClassifier(new StandardClassifier());
 
 	        Thread thread = new Thread (crawler, crawler.getName ());
@@ -55,7 +55,7 @@ public class Testing {
 					}
 					System.out.println();
 				}*/
-				Thread.sleep(1000);
+				Thread.sleep(4000);
 			}
 		}
 		catch(MalformedURLException ex) {}
