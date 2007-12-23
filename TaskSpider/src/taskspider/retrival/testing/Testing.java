@@ -76,8 +76,7 @@ public class Testing {
 				indexWriter.addDocument(docs[i]);
 			}
 			indexWriter.optimize();
-			indexWriter.close();
-			
+			indexWriter.close();			
 			
 //			 Now search the index:
 		    IndexSearcher isearcher = new IndexSearcher(idx);

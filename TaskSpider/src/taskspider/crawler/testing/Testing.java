@@ -73,14 +73,15 @@ public class Testing {
 					Region[] region = page.getTokens();
 					if(text==null)
 						continue;
-					System.out.println("Text: ");
-					for(int j=0; j<text.length; j++) {
-						System.out.print(text[j].toString()+", ");
-					}
+//					System.out.println("Text: ");
+//					for(int j=0; j<text.length; j++) {
+//						System.out.print(text[j].toString()+", ");
+//					}
 //					for(int j=0; j<text.length; j++) {
 //						System.out.print(region[j].toString()+", ");
 //					}
-					System.out.println();
+//					System.out.println();
+					System.out.print(i+" - ");
 					deepScan(page.getLinks());
 				}
 				/*if(link[i].getStatus()==LinkEvent.DOWNLOADED || link[i].getStatus()==LinkEvent.VISITED) {
