@@ -53,11 +53,19 @@ public class Spider {
         return thread;
 	}
 	
-	public void run() {
-		thread.run();
+	public void start() {
+		thread.start();
 	}
 	
 	public void stop() {
 		thread.interrupt();
+	}
+	
+	public Link[] getExploredRoots() {
+		return crawler.getCrawledRoots();
+	}
+	
+	public int getPagesVisited() {
+		return crawler.getPagesVisited();
 	}
 }
