@@ -10,6 +10,8 @@ import websphinx.*;
 import java.net.*;
 import java.io.*;
 
+import taskspider.spider.core.*;
+
 /**
  * @author Simone Notargiacomo, Giuseppe Schipani
  */
@@ -19,31 +21,24 @@ public class Testing {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		Crawler crawler = new Crawler();
 		try {
 			int num=0, out=0;
-			crawler.addRoot(new Link("http://www.google.com"));
-			crawler.addClassifier(new StandardClassifier());
-
-	        EventLog logger = new EventLog ("/tmp/taskspider");
-	        crawler.addCrawlListener (logger);
-	        crawler.addLinkListener (logger);
-			
-	        Thread thread = new Thread (crawler, crawler.getName ());
-	        thread.setDaemon (true);
-	        thread.start ();
+			Link[] links = { new Link("http://www.google.com"), new Link("http://www.ibm.com") };
+			Spider spider = new Spider(links);
+			spider.start();
 			while(true) {
-				Link[] link = crawler.getCrawledRoots();
-				if(num==crawler.getPagesVisited())
+				Link[] link = spider.getExploredRoots();
+				System.out.println("Roots: "+link.length);
+				if(num==spider.getPagesVisited())
 					out++;
 				else
 					out=0;
 				
 				if(out>6) {
-					thread.interrupt();
+					spider.stop();
 					break;
 				}
-				num = crawler.getPagesVisited();
+				num = spider.getPagesVisited();
 				System.out.println("Page: "+num);
 				deepScan(link);
 				/*if(link!=null) {
@@ -61,12 +56,12 @@ public class Testing {
 					}
 					System.out.println();
 				}*/
-				Thread.sleep(4000);
+				Thread.sleep(2000);
 			}
 		}
-		catch(MalformedURLException ex) {}
-		catch(InterruptedException ex) {}
-		catch(IOException ex) {}
+		catch(MalformedURLException ex) {ex.printStackTrace();}
+		catch(InterruptedException ex) {ex.printStackTrace();}
+		catch(IOException ex) {ex.printStackTrace();}
 	
 	}
 	
