@@ -4,8 +4,8 @@
 package taskspider.spider.core;
 
 import java.io.IOException;
-
 import websphinx.*;
+import taskspider.util.properties.PropertiesReader;
 
 /**
  * @author Simone Notargiacomo, Giuseppe Schipani
@@ -14,7 +14,7 @@ import websphinx.*;
 public class Spider {
 	private Crawler crawler;
 	private EventLog logger;
-	private String pathLog;
+	private String logPath;
 	private Thread thread;
 	
 	public Spider(Link[] links) {
@@ -26,8 +26,9 @@ public class Spider {
 		}
 		
 		crawler.addClassifier(new StandardClassifier());
-		pathLog = "/tmp/taskspider";
-		createLogger(pathLog);
+		if((logPath = PropertiesReader.getProperty("logPath"))==null)
+			System.out.println("Error in properties file");
+		createLogger(logPath);
 		createThread();
 		
 	}
@@ -54,7 +55,12 @@ public class Spider {
 	}
 	
 	public void start() {
-		thread.start();
+		try {
+			thread.start();
+			Thread.sleep(Integer.parseInt(PropertiesReader.getProperty("threadDelay")));
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void stop() {
