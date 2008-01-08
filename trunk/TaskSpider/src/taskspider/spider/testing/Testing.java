@@ -11,11 +11,14 @@ import java.net.*;
 import java.io.*;
 
 import taskspider.spider.core.*;
+import taskspider.data.document.*;
 
 /**
  * @author Simone Notargiacomo, Giuseppe Schipani
  */
 public class Testing {
+	
+	private static DocsManager docsManager = new DocsManager();
 
 	/**
 	 * @param args
@@ -66,24 +69,30 @@ public class Testing {
 	}
 	
 	public static void deepScan(Link[] link) {
+		String url;
+		String words = "";
+		String tokens = "";
 		if(link!=null) {
 			for(int i=0; i<link.length; i++) {
 				Page page = link[i].getPage();
 				if(page!=null) {
-					//System.out.println("Link: "+link[i].toURL()+", size: "+link.length);
 					Text[] text = page.getWords();
 					Region[] region = page.getTokens();
-					if(text==null)
+					if(text==null || region==null)
 						continue;
-//					System.out.println("Text: ");
-//					for(int j=0; j<text.length; j++) {
-//						System.out.print(text[j].toString()+", ");
-//					}
-//					for(int j=0; j<text.length; j++) {
-//						System.out.print(region[j].toString()+", ");
-//					}
-//					System.out.println();
-					System.out.print(i+" - ");
+					for(int j=0; j<text.length; j++) {
+						words += text[j].toString()+", ";
+					}
+					for(int j=0; j<region.length; j++) {
+						tokens += region[j].toString()+", ";
+					}
+					url = link[i].toURL();
+					System.out.println("URL: "+url);
+					System.out.println("Words: "+words);
+					System.out.println("Tokens: "+tokens);
+					System.out.println();
+					docsManager.addDocument(url, words, tokens);
+
 					deepScan(page.getLinks());
 				}
 				/*if(link[i].getStatus()==LinkEvent.DOWNLOADED || link[i].getStatus()==LinkEvent.VISITED) {
@@ -92,7 +101,6 @@ public class Testing {
 				}*/
 				//System.out.print(i+", "+link[i].getHost()+", "+link[i].toDescription());
 			}
-			//System.out.println();
 		}
 	}
 
