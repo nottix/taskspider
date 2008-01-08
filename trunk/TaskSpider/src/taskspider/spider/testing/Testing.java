@@ -27,10 +27,11 @@ public class Testing {
 			Spider spider = new Spider(links);
 			spider.start();
 			SpiderExplorer spiderExplorer = new SpiderExplorer(spider);
-			spiderExplorer.run();
+			spiderExplorer.start();
 			spiderExplorer.getDocs();
 			Thread.sleep(6000);
-			spiderExplorer.stop();
+			spiderExplorer.interrupt();
+			System.out.println("STOPPED");
 			
 		}
 		catch(MalformedURLException ex) {ex.printStackTrace();}
