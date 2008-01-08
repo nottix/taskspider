@@ -45,5 +45,8 @@ public class DocsManager {
 		docs.clear();
 	}
 	
+	public Vector<Document> getDocs() {
+		return docs;
+	}
 	
 }
