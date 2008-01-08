@@ -15,7 +15,7 @@ import org.apache.lucene.document.*;
  * @author Simone Notargiacomo, Giuseppe Schipani
  *
  */
-public class SpiderExplorer implements Runnable {
+public class SpiderExplorer extends Thread {
 	private Spider spider;
 	private DocsManager docsManager;
 	private boolean interrupt;
@@ -24,6 +24,7 @@ public class SpiderExplorer implements Runnable {
 		this.spider = spider;
 		docsManager = new DocsManager();
 		resetInterrupt();
+		this.setDaemon(true);
 		
 	}
 	
@@ -39,22 +40,23 @@ public class SpiderExplorer implements Runnable {
 		return this.interrupt;
 	}
 	
-	public void run(){
-		int num=0, out=0;
-		Link[] link = spider.getExploredRoots();
-		System.out.println("Roots: "+link.length);
-		if(num==spider.getPagesVisited())
-			out++;
-		else
-			out=0;
+	public void run() {
+		while(!interrupt) {
+			int num=0, out=0;
+			Link[] link = spider.getExploredRoots();
+			System.out.println("Roots: "+link.length);
+			if(num==spider.getPagesVisited())
+				out++;
+			else
+				out=0;
 			
-		if(out>6) {
-			spider.stop();
-		}
-		else {
-			num = spider.getPagesVisited();
-			System.out.println("Page: "+num);
-			deepScan(link);
+			if(out>6) {
+				spider.stop();
+			}
+			else {
+				num = spider.getPagesVisited();
+				System.out.println("Page: "+num);
+				deepScan(link);
 			/*if(link!=null) {
 				for(int i=0; i<link.length; i++) {
 					Page page = link[i].getPage();
@@ -70,10 +72,13 @@ public class SpiderExplorer implements Runnable {
 				}
 				System.out.println();
 			}*/
+			}
 		}
+		spider.stop();
 	}
 	
-	public void stop() {
+	public void interrupt() {
+		System.out.println("SET");
 		setInterrupt();
 		spider.stop();
 	}
@@ -100,7 +105,7 @@ public class SpiderExplorer implements Runnable {
 					System.out.println("URL: "+url);
 					System.out.println("Words: "+words);
 					System.out.println("Tokens: "+tokens);
-					System.out.println();
+					System.out.println(i+" "+interrupt);
 					docsManager.addDocument(url, words, tokens);
 
 					deepScan(page.getLinks());
