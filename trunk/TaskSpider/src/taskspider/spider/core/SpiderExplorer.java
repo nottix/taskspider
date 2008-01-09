@@ -44,7 +44,7 @@ public class SpiderExplorer extends Thread {
 		while(!interrupt) {
 			int num=0, out=0;
 			Link[] link = spider.getExploredRoots();
-			System.out.println("Roots: "+link.length);
+			//System.out.println("Roots: "+link.length);
 			if(num==spider.getPagesVisited())
 				out++;
 			else
@@ -55,7 +55,7 @@ public class SpiderExplorer extends Thread {
 			}
 			else {
 				num = spider.getPagesVisited();
-				System.out.println("Page: "+num);
+				//System.out.println("Page: "+num);
 				deepScan(link);
 			/*if(link!=null) {
 				for(int i=0; i<link.length; i++) {

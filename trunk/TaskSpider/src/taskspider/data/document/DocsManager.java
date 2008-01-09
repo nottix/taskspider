@@ -23,13 +23,17 @@ public class DocsManager {
 	private StringReader stringReader;
 	
 	private String url;
+	private String title;
 	private String words;
 	private String tokens;
+	private String description;
+	private String keywords;
+	private String keyphrases;
+	private String body;
+	
 	private Text[] text;
 	private Region[] region;
 	private Element[] elements;
-	private String title;
-	private String summary;
 	
 	public DocsManager() {
 		docs = new Vector<Document>();
@@ -52,45 +56,70 @@ public class DocsManager {
 			for(int j=0; j<region.length; j++) {
 				tokens += region[j].toString()+", ";
 			}
-			System.out.println("Words: "+words);
-			System.out.println("Tokens: "+tokens);
+//			System.out.println("Words: "+words);
+//			System.out.println("Tokens: "+tokens);
 			tempDoc.add(new Field("words", words, Field.Store.YES, Field.Index.TOKENIZED));
 			tempDoc.add(new Field("tokens", tokens, Field.Store.YES, Field.Index.TOKENIZED));
 		}
 		
 		if((title = page.getTitle())!=null) {
 			tempDoc.add(new Field("title", title, Field.Store.YES, Field.Index.TOKENIZED));
-			System.out.println("TITLE: "+title);
+			System.out.println("title: "+title);
 		}
 		
 		if((elements=page.getElements())!=null) {
-			if(elements[0]!=null) {
-				tempDoc.add(new Field("title", title, Field.Store.YES, Field.Index.TOKENIZED));
-				System.out.println("TITLE: "+title);
-			}
+			System.out.println("description: "+(description=getTagContent("meta", "description", elements)));
+			if(description!=null)
+				tempDoc.add(new Field("description", description, Field.Store.YES, Field.Index.TOKENIZED));
+			
 		}
-			System.out.println("DESCRIPTION: "+page.getElements()[1].getTagName());
 		
-//		stringReader = new StringReader(page.getContent());
-//		htmlParser = new HTMLParser(stringReader);
-//		try {
-//			title = htmlParser.getTitle();
-//			summary = htmlParser.getSummary();
-//			System.out.println("title: "+title+", summary: "+summary);
-//			
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
+		if((elements=page.getElements())!=null) {
+			System.out.println("keywords: "+(keywords=getTagContent("meta", "keywords", elements)));
+			if(keywords!=null)
+				tempDoc.add(new Field("keywords", keywords, Field.Store.YES, Field.Index.TOKENIZED));
+			
+		}
 		
+		if((elements=page.getElements())!=null) {
+			System.out.println("keyphrases: "+(keyphrases=getTagContent("meta", "keyphrases", elements)));
+			if(keyphrases!=null)
+				tempDoc.add(new Field("keyphrases", keyphrases, Field.Store.YES, Field.Index.TOKENIZED));
+			
+		}
 		
-		
-		//tempDoc.add(new Field("summary", summary, Field.Store.YES, Field.Index.TOKENIZED));
+		if((elements=page.getElements())!=null) {
+			System.out.println("body: "+(body=getTagContent("body", null, elements)));
+			if(body!=null)
+				tempDoc.add(new Field("body", body, Field.Store.YES, Field.Index.TOKENIZED));
+			
+		}
 
 		docs.add(tempDoc);
 		
 		return tempDoc;
+	}
+	
+	private String getTagContent(String tagName, String attribute, Element[] elems) {
+		if(elems!=null) {
+			for(int i=0; i<elems.length; i++) {
+				if(elems[i].getTagName().equals(tagName)) {
+					if(attribute!=null && elems[i].getHTMLAttribute("name")!=null) {
+						//System.out.println("tag: "+elems[i].getTagName()+", attr: "+elems[i].getHTMLAttribute("name"));
+						if(elems[i].getHTMLAttribute("name").equals(attribute))
+							return elems[i].getHTMLAttribute("content");
+						else 
+							continue;
+					}
+					else if(attribute!=null)
+						continue;
+					else
+						return elems[i].toText();
+				}
+			}
+			
+		}
+		return null;
 	}
 	
 	public Document getDocument(int index) {
