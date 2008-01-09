@@ -31,8 +31,8 @@ public class DocsManager {
 	private String keyphrases;
 	private String body;
 	
-	private Text[] text;
-	private Region[] region;
+//	private Text[] text;
+//	private Region[] region;
 	private Element[] elements;
 	
 	public DocsManager() {
@@ -46,21 +46,21 @@ public class DocsManager {
 		System.out.println("URL: "+url);
 		tempDoc.add(new Field("url", url, Field.Store.YES, Field.Index.TOKENIZED));
 		
-		text = page.getWords();
-		region = page.getTokens();
-		if(text!=null) {
-			words = tokens = "";
-			for(int j=0; j<text.length; j++) {
-				words += text[j].toString()+", ";
-			}
-			for(int j=0; j<region.length; j++) {
-				tokens += region[j].toString()+", ";
-			}
-//			System.out.println("Words: "+words);
-//			System.out.println("Tokens: "+tokens);
-			tempDoc.add(new Field("words", words, Field.Store.YES, Field.Index.TOKENIZED));
-			tempDoc.add(new Field("tokens", tokens, Field.Store.YES, Field.Index.TOKENIZED));
-		}
+//		text = page.getWords();
+//		region = page.getTokens();
+//		if(text!=null) {
+//			words = tokens = "";
+//			for(int j=0; j<text.length; j++) {
+//				words += text[j].toString()+", ";
+//			}
+//			for(int j=0; j<region.length; j++) {
+//				tokens += region[j].toString()+", ";
+//			}
+////			System.out.println("Words: "+words);
+////			System.out.println("Tokens: "+tokens);
+//			tempDoc.add(new Field("words", words, Field.Store.YES, Field.Index.TOKENIZED));
+//			tempDoc.add(new Field("tokens", tokens, Field.Store.YES, Field.Index.TOKENIZED));
+//		}
 		
 		if((title = page.getTitle())!=null) {
 			tempDoc.add(new Field("title", title, Field.Store.YES, Field.Index.TOKENIZED));
