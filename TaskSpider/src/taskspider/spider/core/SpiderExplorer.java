@@ -84,30 +84,11 @@ public class SpiderExplorer extends Thread {
 	}
 	
 	private void deepScan(Link[] link) {
-		String url;
-		String words = "";
-		String tokens = "";
 		if(link!=null) {
 			for(int i=0; i<link.length && !getInterrupt(); i++) {
 				Page page = link[i].getPage();
 				if(page!=null) {
-					Text[] text = page.getWords();
-					Region[] region = page.getTokens();
-					if(text==null || region==null)
-						continue;
-					for(int j=0; j<text.length; j++) {
-						words += text[j].toString()+", ";
-					}
-					for(int j=0; j<region.length; j++) {
-						tokens += region[j].toString()+", ";
-					}
-					url = link[i].toURL();
-					System.out.println("URL: "+url);
-					System.out.println("Words: "+words);
-					System.out.println("Tokens: "+tokens);
-					System.out.println(i+" "+interrupt);
-					docsManager.addDocument(url, words, tokens);
-
+					docsManager.addDocument(page);
 					deepScan(page.getLinks());
 				}
 				/*if(link[i].getStatus()==LinkEvent.DOWNLOADED || link[i].getStatus()==LinkEvent.VISITED) {

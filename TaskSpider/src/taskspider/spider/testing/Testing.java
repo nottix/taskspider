@@ -29,7 +29,7 @@ public class Testing {
 			SpiderExplorer spiderExplorer = new SpiderExplorer(spider);
 			spiderExplorer.start();
 			spiderExplorer.getDocs();
-			Thread.sleep(6000);
+			Thread.sleep(12000);
 			spiderExplorer.interrupt();
 			System.out.println("STOPPED");
 			
