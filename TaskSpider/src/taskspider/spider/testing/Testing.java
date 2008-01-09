@@ -23,7 +23,7 @@ public class Testing {
 	 */
 	public static void main(String[] args) {
 		try {
-			Link[] links = { new Link("http://www.google.com"), new Link("http://www.ibm.com") };
+			Link[] links = { new Link("http://www.beppegrillo.it/")/*, new Link("http://www.google.com"), new Link("http://www.ibm.com")*/ };
 			Spider spider = new Spider(links);
 			spider.start();
 			SpiderExplorer spiderExplorer = new SpiderExplorer(spider);
