@@ -51,6 +51,8 @@ public class Testing {
 			while(start!=end || retry<4) {
 				if(start==end)
 					retry++;
+				else
+					retry=0;
 				System.out.println("start: "+start+", end: "+end);
 				addDocs(spiderExplorer.getDocs(), start, end);
 				Thread.sleep(1000);
