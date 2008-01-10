@@ -74,4 +74,8 @@ public class Spider {
 	public int getPagesVisited() {
 		return crawler.getPagesVisited();
 	}
+	
+	public void setMaxLevel(int level) {
+		crawler.setMaxDepth(level);
+	}
 }
