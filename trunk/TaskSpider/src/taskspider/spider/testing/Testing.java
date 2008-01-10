@@ -36,14 +36,18 @@ public class Testing {
 	 */
 	public static void main(String[] args) {
 		try {
-			Link[] links = { new Link("http://localhost/spider.php?id=6")/*, new Link("http://www.google.com"), new Link("http://www.ibm.com")*/ };
+			Link[] links = { new Link("http://www.google.it")/*, new Link("http://www.google.com"), new Link("http://www.ibm.com")*/ };
 			Spider spider = new Spider(links);
 			spider.start();
 			SpiderExplorer spiderExplorer = new SpiderExplorer(spider);
 			spiderExplorer.start();
 			//addDocs(spiderExplorer.getDocs());
-			Thread.sleep(2000);
-			System.out.println(spiderExplorer.getDocs().toString());
+			Thread.sleep(1000);
+			//System.out.println(spiderExplorer.getDocs().toString());
+			Vector<Document> docs = spiderExplorer.getDocs();
+			int size = docs.size();
+			System.out.println("size: "+size);
+			addDocs(spiderExplorer.getDocs(), size);
 			Thread.sleep(12000);
 			spiderExplorer.interrupt();
 			System.out.println("STOPPED");
@@ -54,18 +58,17 @@ public class Testing {
 	
 	}
 	
-	public static void addDocs(Vector<Document> docs) {
+	public static void addDocs(Vector<Document> docs, int size) {
 		try {
 //			 To store an index on disk, use this instead (note that the 
 		    // parameter true will overwrite the index in that directory
 		    // if one exists):
 		    // Directory directory = FSDirectory.getDirectory("/tmp/testindex", true);
-			System.out.println("pippo "+docs.size());
 			//Thread.sleep(2000);
 			RAMDirectory idx = new RAMDirectory();
 			IndexWriter indexWriter = new IndexWriter(idx, new StandardAnalyzer(), true);
-			for(int i=0; i<docs.size(); i++) {
-				System.out.println("zzz "+i+" "+docs.size());
+			for(int i=0; i<size; i++) {
+				//System.out.println("zzz "+i+" "+docs.size());
 				indexWriter.addDocument(docs.get(i));
 			}
 			indexWriter.optimize();
