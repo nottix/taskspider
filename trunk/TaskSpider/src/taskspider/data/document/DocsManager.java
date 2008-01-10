@@ -95,7 +95,8 @@ public class DocsManager {
 			
 		}
 
-		docs.add(tempDoc);
+		if(!docs.contains(tempDoc))
+			docs.add(tempDoc);
 		
 		return tempDoc;
 	}
