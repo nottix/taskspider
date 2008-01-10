@@ -47,18 +47,15 @@ public class Testing {
 			Vector<Document> docs = spiderExplorer.getDocs();
 			int start = 0;
 			int end = docs.size();
-			for(int i=0; i<4; i++) {
-				Thread.sleep(500);
-				while(start!=end) {
-					System.out.println("start: "+start+", end: "+end);
-					addDocs(spiderExplorer.getDocs(), start, end);
-					Thread.sleep(1000);
-					start = end;
-					end = docs.size();
-				}
+			int retry=0;
+			while(start!=end || retry<4) {
+				if(start==end)
+					retry++;
+				System.out.println("start: "+start+", end: "+end);
+				addDocs(spiderExplorer.getDocs(), start, end);
+				Thread.sleep(1000);
 				start = end;
 				end = docs.size();
-				System.out.println("SIZE "+start+" "+end);
 			}
 			spiderExplorer.interrupt();
 			System.out.println("STOPPED "+start+" "+end);
