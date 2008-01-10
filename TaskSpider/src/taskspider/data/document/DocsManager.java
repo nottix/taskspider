@@ -96,18 +96,18 @@ public class DocsManager {
 		}
 
 		if(!isPresent(tempDoc)) {
-			//System.out.println("OK");
+			System.out.println("URLdoc: "+tempDoc.get("url"));
 			docs.add(tempDoc);
 		}
-		else
-			System.out.println("NOOOOO");
+		//else
+			//System.out.println("NOOOOO");
 		
 		return tempDoc;
 	}
 	
 	private boolean isPresent(Document doc) {
 		for(int i=0; i<docs.size(); i++) {
-			if(docs.get(i).getFields("url").equals(doc.getFields("url")))
+			if(docs.get(i).get("url").equals(doc.get("url")))
 				return true;
 		}
 		return false;
