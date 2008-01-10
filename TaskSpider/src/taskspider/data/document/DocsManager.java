@@ -43,7 +43,7 @@ public class DocsManager {
 		tempDoc = new Document();
 		
 		url = page.getOrigin().toURL();
-		System.out.println("URL: "+url);
+//		System.out.println("URL: "+url);
 		tempDoc.add(new Field("url", url, Field.Store.YES, Field.Index.TOKENIZED));
 		
 //		text = page.getWords();
@@ -64,32 +64,32 @@ public class DocsManager {
 		
 		if((title = page.getTitle())!=null) {
 			tempDoc.add(new Field("title", title, Field.Store.YES, Field.Index.TOKENIZED));
-			System.out.println("title: "+title);
+			//System.out.println("title: "+title);
 		}
 		
 		if((elements=page.getElements())!=null) {
-			System.out.println("description: "+(description=getTagContent("meta", "description", elements)));
+//			System.out.println("description: "+(description=getTagContent("meta", "description", elements)));
 			if(description!=null)
 				tempDoc.add(new Field("description", description, Field.Store.YES, Field.Index.TOKENIZED));
 			
 		}
 		
 		if((elements=page.getElements())!=null) {
-			System.out.println("keywords: "+(keywords=getTagContent("meta", "keywords", elements)));
+//			System.out.println("keywords: "+(keywords=getTagContent("meta", "keywords", elements)));
 			if(keywords!=null)
 				tempDoc.add(new Field("keywords", keywords, Field.Store.YES, Field.Index.TOKENIZED));
 			
 		}
 		
 		if((elements=page.getElements())!=null) {
-			System.out.println("keyphrases: "+(keyphrases=getTagContent("meta", "keyphrases", elements)));
+//			System.out.println("keyphrases: "+(keyphrases=getTagContent("meta", "keyphrases", elements)));
 			if(keyphrases!=null)
 				tempDoc.add(new Field("keyphrases", keyphrases, Field.Store.YES, Field.Index.TOKENIZED));
 			
 		}
 		
 		if((elements=page.getElements())!=null) {
-			System.out.println("body: "+(body=getTagContent("body", null, elements)));
+//			System.out.println("body: "+(body=getTagContent("body", null, elements)));
 			if(body!=null)
 				tempDoc.add(new Field("body", body, Field.Store.YES, Field.Index.TOKENIZED));
 			
