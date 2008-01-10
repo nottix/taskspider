@@ -96,7 +96,7 @@ public class DocsManager {
 		}
 
 		if(!isPresent(tempDoc)) {
-			System.out.println("URLdoc: "+tempDoc.get("url"));
+			//System.out.println("URLdoc: "+tempDoc.get("url"));
 			docs.add(tempDoc);
 		}
 		//else
