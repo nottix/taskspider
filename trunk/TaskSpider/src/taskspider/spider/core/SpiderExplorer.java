@@ -4,6 +4,7 @@
 package taskspider.spider.core;
 
 import taskspider.data.document.*;
+import taskspider.util.properties.PropertiesReader;
 import websphinx.Link;
 import websphinx.Page;
 import websphinx.Region;

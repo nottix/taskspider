@@ -36,22 +36,32 @@ public class Testing {
 	 */
 	public static void main(String[] args) {
 		try {
-			Link[] links = { new Link("http://www.maglificiosalerno.it")/*, new Link("http://www.google.com"), new Link("http://www.ibm.com")*/ };
+			Link[] links = { new Link("http://www.maglificiosalerno.it"), new Link("http://www.alessioluffarelli.it")/*, new Link("http://www.google.com"), new Link("http://www.ibm.com")*/ };
 			Spider spider = new Spider(links);
-			spider.setMaxLevel(1);
+			spider.setMaxLevel(3);
 			spider.start();
 			SpiderExplorer spiderExplorer = new SpiderExplorer(spider);
 			spiderExplorer.start();
 			//addDocs(spiderExplorer.getDocs());
-			Thread.sleep(5000);
 			//System.out.println(spiderExplorer.getDocs().toString());
 			Vector<Document> docs = spiderExplorer.getDocs();
-			int size = docs.size();
-			System.out.println("size: "+size);
-			addDocs(spiderExplorer.getDocs(), size);
-			Thread.sleep(12000);
+			int start = 0;
+			int end = docs.size();
+			for(int i=0; i<4; i++) {
+				Thread.sleep(500);
+				while(start!=end) {
+					System.out.println("start: "+start+", end: "+end);
+					addDocs(spiderExplorer.getDocs(), start, end);
+					Thread.sleep(1000);
+					start = end;
+					end = docs.size();
+				}
+				start = end;
+				end = docs.size();
+				System.out.println("SIZE "+start+" "+end);
+			}
 			spiderExplorer.interrupt();
-			System.out.println("STOPPED");
+			System.out.println("STOPPED "+start+" "+end);
 			
 		}
 		catch(MalformedURLException ex) {ex.printStackTrace();}
@@ -59,7 +69,7 @@ public class Testing {
 	
 	}
 	
-	public static void addDocs(Vector<Document> docs, int size) {
+	public static void addDocs(Vector<Document> docs, int start, int end) {
 		try {
 //			 To store an index on disk, use this instead (note that the 
 		    // parameter true will overwrite the index in that directory
@@ -68,8 +78,8 @@ public class Testing {
 			//Thread.sleep(2000);
 			RAMDirectory idx = new RAMDirectory();
 			IndexWriter indexWriter = new IndexWriter(idx, new StandardAnalyzer(), true);
-			for(int i=0; i<size; i++) {
-				System.out.println("URL: "+docs.get(i).get("url"));
+			for(int i=start; i<end; i++) {
+				//System.out.println("URL: "+docs.get(i).get("url"));
 				indexWriter.addDocument(docs.get(i));
 			}
 			indexWriter.optimize();
@@ -79,16 +89,16 @@ public class Testing {
 		    IndexSearcher isearcher = new IndexSearcher(idx);
 
 		    // Parse a simple query that searches for "text":
-		    QueryParser parser = new QueryParser("body", new StandardAnalyzer());
-		    Query query = parser.parse("bullismo");
+		    QueryParser parser = new QueryParser("title", new StandardAnalyzer());
+		    Query query = parser.parse("Alessio");
 		    Hits hits = isearcher.search(query);
 		    //assertEquals(1, hits.length());
-		    System.out.println("zzz");
+		    System.out.println("Hits: "+hits.length());
 		    // Iterate through the results:
 		    for (int i = 0; i < hits.length(); i++)
 		    {
 		      Document hitDoc = hits.doc(i);
-		      System.out.println("Res: "+hitDoc.getField("body"));
+		      System.out.println("Res: "+hitDoc.get("url"));
 		      //assertEquals("This is the text to be indexed.", hitDoc.get("fieldname"));
 		    }
 
