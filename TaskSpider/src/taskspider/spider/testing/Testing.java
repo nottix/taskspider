@@ -36,13 +36,14 @@ public class Testing {
 	 */
 	public static void main(String[] args) {
 		try {
-			Link[] links = { new Link("http://www.google.it")/*, new Link("http://www.google.com"), new Link("http://www.ibm.com")*/ };
+			Link[] links = { new Link("http://www.maglificiosalerno.it")/*, new Link("http://www.google.com"), new Link("http://www.ibm.com")*/ };
 			Spider spider = new Spider(links);
+			spider.setMaxLevel(1);
 			spider.start();
 			SpiderExplorer spiderExplorer = new SpiderExplorer(spider);
 			spiderExplorer.start();
 			//addDocs(spiderExplorer.getDocs());
-			Thread.sleep(1000);
+			Thread.sleep(5000);
 			//System.out.println(spiderExplorer.getDocs().toString());
 			Vector<Document> docs = spiderExplorer.getDocs();
 			int size = docs.size();
@@ -68,7 +69,7 @@ public class Testing {
 			RAMDirectory idx = new RAMDirectory();
 			IndexWriter indexWriter = new IndexWriter(idx, new StandardAnalyzer(), true);
 			for(int i=0; i<size; i++) {
-				//System.out.println("zzz "+i+" "+docs.size());
+				System.out.println("URL: "+docs.get(i).get("url"));
 				indexWriter.addDocument(docs.get(i));
 			}
 			indexWriter.optimize();
