@@ -95,10 +95,22 @@ public class DocsManager {
 			
 		}
 
-		if(!docs.contains(tempDoc))
+		if(!isPresent(tempDoc)) {
+			//System.out.println("OK");
 			docs.add(tempDoc);
+		}
+		else
+			System.out.println("NOOOOO");
 		
 		return tempDoc;
+	}
+	
+	private boolean isPresent(Document doc) {
+		for(int i=0; i<docs.size(); i++) {
+			if(docs.get(i).getFields("url").equals(doc.getFields("url")))
+				return true;
+		}
+		return false;
 	}
 	
 	private String getTagContent(String tagName, String attribute, Element[] elems) {
