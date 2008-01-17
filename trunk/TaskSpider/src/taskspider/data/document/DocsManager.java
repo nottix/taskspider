@@ -12,6 +12,9 @@ import websphinx.Element;
 
 import java.util.*;
 import java.io.*;
+import java.text.*;
+
+import taskspider.util.debug.*;
 
 /**
  * @author Simone Notargiacomo, Giuseppe Schipani
@@ -96,8 +99,12 @@ public class DocsManager {
 			body=getTagContent("body", null, elements);
 			if(body!=null)
 				tempDoc.add(new Field("body", body, Field.Store.YES, Field.Index.TOKENIZED));
-			
 		}
+		
+//		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+//		Date date = new Date();
+//		tempDoc.add(new Field("date", dateFormat.format(date), Field.Store.YES, Field.Index.TOKENIZED));
+		tempDoc.add(new Field("date", String.valueOf(page.getExpiration()), Field.Store.YES, Field.Index.TOKENIZED));
 
 		if(!isPresent(tempDoc)) {
 			//System.out.println("URLdoc: "+tempDoc.get("url"));

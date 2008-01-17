@@ -1,12 +1,12 @@
 package taskspider.retrival.core;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
@@ -51,41 +51,33 @@ public class Indexer {
 		}
 	}
 	
-	public Hits getResult() {
+	private Hits getResult() {
 		return this.result;
 	}
 	
 	private Query genQuery(String taskString) {
 		BooleanQuery booleanQuery = new BooleanQuery();
-//		WildcardQuery queryUrl = new WildcardQuery(new Term("url", "*"+taskString+"*"));
-//		booleanQuery.add(queryUrl, BooleanClause.Occur.SHOULD);
-//		WildcardQuery queryTitle = new WildcardQuery(new Term("title", "*"+taskString+"*"));
-//		booleanQuery.add(queryTitle, BooleanClause.Occur.SHOULD);
-//		WildcardQuery queryKeywords = new WildcardQuery(new Term("keywords", "*"+taskString+"*"));
-//		booleanQuery.add(queryKeywords, BooleanClause.Occur.SHOULD);
-//		
+		WildcardQuery queryUrl = new WildcardQuery(new Term("url", "*"+taskString+"*"));
+		booleanQuery.add(queryUrl, BooleanClause.Occur.SHOULD);
+		WildcardQuery queryTitle = new WildcardQuery(new Term("title", "*"+taskString+"*"));
+		booleanQuery.add(queryTitle, BooleanClause.Occur.SHOULD);
+		WildcardQuery queryKeywords = new WildcardQuery(new Term("keywords", "*"+taskString+"*"));
+		booleanQuery.add(queryKeywords, BooleanClause.Occur.SHOULD);
+		
 		WildcardQuery queryBody = new WildcardQuery(new Term("body", "*"+taskString+"*"));
 		booleanQuery.add(queryBody, BooleanClause.Occur.SHOULD);
+		
+//		WildcardQuery booleanQuery = new WildcardQuery(new Term("url", "*"+taskString+"*"));
 		
 		return booleanQuery;
 	}
 	
-	public int search(String queryString, String field) {
+	private int search(String queryString, String field) {
 		try {
-			if(isearcher==null)
-				isearcher = new IndexSearcher(indexTempDir);
-			//QueryParser parser = new QueryParser(field, new StandardAnalyzer());
-			//Query query = parser.parse(queryString);
-			
-			//WildcardQuery query = new WildcardQuery(new Term(field, "*"+queryString+"*"));
+			isearcher = new IndexSearcher(indexTempDir);
 			result = isearcher.search(genQuery(queryString));
 			Debug.println("Hits: "+result.length(), 1);
-			// Iterate through the results:
-			/*for (int i = 0; i < result.length(); i++)
-			{
-				Document hitDoc = result.doc(i);
-				System.out.println("Res: "+hitDoc.get("url"));
-			}*/
+			
 			return result.length();
 		} catch (CorruptIndexException e) {
 			e.printStackTrace();
@@ -139,10 +131,29 @@ public class Indexer {
 				else
 					writer = new IndexWriter(indexDir, new StandardAnalyzer(), false);
 				
+				int num;
 				for(int i=0; i<result.length(); i++) {
-					if(!isDocPresent(result.doc(i))) {
+					if( (num=isDocPresent(result.doc(i)))==-1 ) {
 						writer.addDocument(result.doc(i));
 						Debug.println("DOC: "+result.doc(i).get("url"), 1);
+						Debug.println("DATE: "+result.doc(i).get("date"), 1);
+					}
+					else {
+						Document doc;
+						if((doc=getDocument(num))!=null) {
+							if(doc.get("url").equals(result.doc(i).get("url"))) {
+								if( result.doc(i).get("date").equals("0") ) {
+									
+								}
+								else if( ((new Long(doc.get("date"))).longValue() >
+									(new Long(result.doc(i).get("date"))).longValue()) ) {
+								
+									writer.updateDocument(new Term("url", result.doc(i).get("url")), doc);
+									Debug.println("ELSEDOC: "+result.doc(i).get("url"), 1);
+								}
+							}
+						}
+						
 					}
 				}
 				writer.close();
@@ -153,6 +164,25 @@ public class Indexer {
 			e.printStackTrace();
 		}
 		return 0;
+	}
+	
+	public Document getDocument(int i) {
+		try {
+			IndexReader indexReader = IndexReader.open(indexDir);
+			if(i>=indexReader.numDocs()) {
+				indexReader.close();
+				return null;
+			}
+			
+			Document doc = indexReader.document(i);
+			indexReader.close();
+			return doc;
+		} catch (CorruptIndexException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public int getDocument() {
@@ -190,14 +220,14 @@ public class Indexer {
 		return false;
 	}
 	
-	public boolean isDocPresent(Document doc) {
+	public int isDocPresent(Document doc) {
 		try {
 			IndexReader indexReader = IndexReader.open(indexDir);
 
 			for(int i=0; i<indexReader.numDocs(); i++) {
 				if(indexReader.document(i).get("url").equals(doc.get("url"))) {
 					indexReader.close();
-					return true;
+					return i;
 				}
 			}
 		} catch (CorruptIndexException e) {
@@ -205,6 +235,6 @@ public class Indexer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return false;
+		return -1;
 	}
 }

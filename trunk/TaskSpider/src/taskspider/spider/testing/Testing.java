@@ -37,7 +37,7 @@ public class Testing {
 	 */
 	public static void main(String[] args) {
 		try {
-			Link[] links = { new Link("http://www.mtv.it")/*new Link("http://www.beppegrillo.it") *//*new Link("http://www.maglificiosalerno.it"),*/ /*new Link("http://www.alessioluffarelli.it")/*, new Link("http://www.google.com"), new Link("http://www.ibm.com")*/ };
+			Link[] links = { new Link("http://www.myspace.com/") /*new Link("http://www.mtv.it")/*new Link("http://www.beppegrillo.it") *//*new Link("http://www.maglificiosalerno.it"),*/ /*new Link("http://www.alessioluffarelli.it")/*, new Link("http://www.google.com"), new Link("http://www.ibm.com")*/ };
 			Spider spider = new Spider(links);
 			spider.setMaxLevel(1);
 			spider.start();
@@ -55,18 +55,6 @@ public class Testing {
 				else
 					retry=0;
 				System.out.println("start: "+start+", end: "+end);
-				
-//				try {
-//					if(indexer.search("alessioluffarelli", "url")!=0) {
-//						for(int i=0; i<indexer.getResult().length(); i++) {
-//							System.out.println("RES: "+indexer.getResult().doc(i).get("url"));
-//						}
-//					}
-//				} catch (CorruptIndexException e) {
-//					e.printStackTrace();
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
 				
 				indexer.indexDocs(spiderExplorer.getDocs(), start, end);
 				Thread.sleep(2000);
