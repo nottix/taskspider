@@ -10,14 +10,13 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.*;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
 
 import taskspider.util.properties.PropertiesReader;
+import taskspider.util.debug.*;
 
 public class Indexer {
 	
@@ -60,10 +59,11 @@ public class Indexer {
 		try {
 			if(isearcher==null)
 				isearcher = new IndexSearcher(indexTempDir);
-			QueryParser parser = new QueryParser(field, new StandardAnalyzer());
-			Query query = parser.parse(queryString);
+			//QueryParser parser = new QueryParser(field, new StandardAnalyzer());
+			//Query query = parser.parse(queryString);
+			WildcardQuery query = new WildcardQuery(new Term(field, "*"+queryString+"*"));
 			result = isearcher.search(query);
-			System.out.println("Hits: "+result.length());
+			Debug.println("Hits: "+result.length(), 1);
 			// Iterate through the results:
 			/*for (int i = 0; i < result.length(); i++)
 			{
@@ -75,30 +75,34 @@ public class Indexer {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (ParseException e) {
-			e.printStackTrace();
 		}
 		return 0;
 	}
 	
 	public int indexDocs(Vector<Document> docs, int start, int end) {
 		try {
-			if(!IndexReader.indexExists(indexTempPath))
+			if(!IndexReader.indexExists(indexTempPath)) {
 				writerTemp = new IndexWriter(indexTempDir, new StandardAnalyzer(), true);
-			else
+				Debug.println("Indice temp creato", 2);
+			}
+			else {
+				Debug.println("Indice temp esistente", 2);
 				writerTemp = new IndexWriter(indexTempDir, new StandardAnalyzer(), false);
+			}
 			
 			//writerTemp = new IndexWriter(indexTempDir, new StandardAnalyzer(), true);
 			for(int i=start; i<end; i++) {
 				//System.out.println("URL: "+docs.get(i).get("url"));
-				if(!isDocPresent(docs.get(i)))
+				if(!isDocPresentTemp(docs.get(i))) {
+					Debug.println("Doc non presente: "+docs.get(i), 2);
 					writerTemp.addDocument(docs.get(i));
+				}
 			}
+			int ret = writerTemp.docCount();
+			writerTemp.close();
 			
 			freeTask();
 			//indexWriter.optimize(); se non ci sono più documenti da aggiungere
-			int ret = writerTemp.docCount();
-			writerTemp.close();
 			return ret;
 		} catch (CorruptIndexException e) {
 			e.printStackTrace();
@@ -119,8 +123,10 @@ public class Indexer {
 					writer = new IndexWriter(indexDir, new StandardAnalyzer(), false);
 				
 				for(int i=0; i<result.length(); i++) {
-					writer.addDocument(result.doc(i));
-					System.out.println("DOC: "+result.doc(i).get("url"));
+					if(!isDocPresent(result.doc(i))) {
+						writer.addDocument(result.doc(i));
+						Debug.println("DOC: "+result.doc(i).get("url"), 2);
+					}
 				}
 				writer.close();
 			}
@@ -149,13 +155,33 @@ public class Indexer {
 		return 0;
 	}
 
-	public boolean isDocPresent(Document doc) {
+	public boolean isDocPresentTemp(Document doc) {
 		try {
 			IndexReader indexReader = IndexReader.open(indexTempDir);
 
 			for(int i=0; i<indexReader.numDocs(); i++) {
-				if(indexReader.document(i).get("url").equals(doc.get("url")))
+				if(indexReader.document(i).get("url").equals(doc.get("url"))) {
+					indexReader.close();
 					return true;
+				}
+			}
+		} catch (CorruptIndexException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public boolean isDocPresent(Document doc) {
+		try {
+			IndexReader indexReader = IndexReader.open(indexDir);
+
+			for(int i=0; i<indexReader.numDocs(); i++) {
+				if(indexReader.document(i).get("url").equals(doc.get("url"))) {
+					indexReader.close();
+					return true;
+				}
 			}
 		} catch (CorruptIndexException e) {
 			e.printStackTrace();

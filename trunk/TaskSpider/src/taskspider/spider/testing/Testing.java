@@ -37,13 +37,13 @@ public class Testing {
 	 */
 	public static void main(String[] args) {
 		try {
-			Link[] links = { /*new Link("http://www.maglificiosalerno.it"),*/ new Link("http://www.alessioluffarelli.it")/*, new Link("http://www.google.com"), new Link("http://www.ibm.com")*/ };
+			Link[] links = { new Link("http://www.maglificiosalerno.it"), /*new Link("http://www.alessioluffarelli.it"), new Link("http://www.google.com"), new Link("http://www.ibm.com")*/ };
 			Spider spider = new Spider(links);
 			spider.setMaxLevel(3);
 			spider.start();
 			SpiderExplorer spiderExplorer = new SpiderExplorer(spider);
 			spiderExplorer.start();
-			Indexer indexer = new Indexer("alessioluffarelli");
+			Indexer indexer = new Indexer("http");
 			Vector<Document> docs = spiderExplorer.getDocs();
 			int start = 0;
 			int end = docs.size();
@@ -56,17 +56,17 @@ public class Testing {
 					retry=0;
 				System.out.println("start: "+start+", end: "+end);
 				
-				try {
-					if(indexer.search("Alessio", "title")!=0) {
-						for(int i=0; i<indexer.getResult().length(); i++) {
-							System.out.println("RES: "+indexer.getResult().doc(i).get("url"));
-						}
-					}
-				} catch (CorruptIndexException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+//				try {
+//					if(indexer.search("alessioluffarelli", "url")!=0) {
+//						for(int i=0; i<indexer.getResult().length(); i++) {
+//							System.out.println("RES: "+indexer.getResult().doc(i).get("url"));
+//						}
+//					}
+//				} catch (CorruptIndexException e) {
+//					e.printStackTrace();
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
 				
 				indexer.indexDocs(spiderExplorer.getDocs(), start, end);
 				Thread.sleep(2000);
