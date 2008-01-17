@@ -55,14 +55,30 @@ public class Indexer {
 		return this.result;
 	}
 	
+	private Query genQuery(String taskString) {
+		BooleanQuery booleanQuery = new BooleanQuery();
+//		WildcardQuery queryUrl = new WildcardQuery(new Term("url", "*"+taskString+"*"));
+//		booleanQuery.add(queryUrl, BooleanClause.Occur.SHOULD);
+//		WildcardQuery queryTitle = new WildcardQuery(new Term("title", "*"+taskString+"*"));
+//		booleanQuery.add(queryTitle, BooleanClause.Occur.SHOULD);
+//		WildcardQuery queryKeywords = new WildcardQuery(new Term("keywords", "*"+taskString+"*"));
+//		booleanQuery.add(queryKeywords, BooleanClause.Occur.SHOULD);
+//		
+		WildcardQuery queryBody = new WildcardQuery(new Term("body", "*"+taskString+"*"));
+		booleanQuery.add(queryBody, BooleanClause.Occur.SHOULD);
+		
+		return booleanQuery;
+	}
+	
 	public int search(String queryString, String field) {
 		try {
 			if(isearcher==null)
 				isearcher = new IndexSearcher(indexTempDir);
 			//QueryParser parser = new QueryParser(field, new StandardAnalyzer());
 			//Query query = parser.parse(queryString);
-			WildcardQuery query = new WildcardQuery(new Term(field, "*"+queryString+"*"));
-			result = isearcher.search(query);
+			
+			//WildcardQuery query = new WildcardQuery(new Term(field, "*"+queryString+"*"));
+			result = isearcher.search(genQuery(queryString));
 			Debug.println("Hits: "+result.length(), 1);
 			// Iterate through the results:
 			/*for (int i = 0; i < result.length(); i++)
@@ -81,27 +97,28 @@ public class Indexer {
 	
 	public int indexDocs(Vector<Document> docs, int start, int end) {
 		try {
-			if(!IndexReader.indexExists(indexTempPath)) {
+			//if(!IndexReader.indexExists(indexTempPath)) {
 				writerTemp = new IndexWriter(indexTempDir, new StandardAnalyzer(), true);
 				Debug.println("Indice temp creato", 2);
-			}
-			else {
-				Debug.println("Indice temp esistente", 2);
-				writerTemp = new IndexWriter(indexTempDir, new StandardAnalyzer(), false);
-			}
+			//}
+			//else {
+			//	Debug.println("Indice temp esistente", 2);
+			//	writerTemp = new IndexWriter(indexTempDir, new StandardAnalyzer(), false);
+			//}
 			
 			//writerTemp = new IndexWriter(indexTempDir, new StandardAnalyzer(), true);
 			for(int i=start; i<end; i++) {
 				//System.out.println("URL: "+docs.get(i).get("url"));
-				if(!isDocPresentTemp(docs.get(i))) {
-					Debug.println("Doc non presente: "+docs.get(i), 2);
+				
+//				if(!isDocPresentTemp(docs.get(i))) {
+//					Debug.println("Doc non presente: "+docs.get(i), 1);
 					writerTemp.addDocument(docs.get(i));
-				}
+//				}
 			}
 			int ret = writerTemp.docCount();
 			writerTemp.close();
 			
-			freeTask();
+			updateIndex();
 			//indexWriter.optimize(); se non ci sono più documenti da aggiungere
 			return ret;
 		} catch (CorruptIndexException e) {
@@ -114,7 +131,7 @@ public class Indexer {
 		return 0;
 	}
 	
-	public int freeTask() {
+	public int updateIndex() {
 		try {
 			if(search(task, "url")!=0) {
 				if(!IndexReader.indexExists(indexPath))
@@ -125,7 +142,7 @@ public class Indexer {
 				for(int i=0; i<result.length(); i++) {
 					if(!isDocPresent(result.doc(i))) {
 						writer.addDocument(result.doc(i));
-						Debug.println("DOC: "+result.doc(i).get("url"), 2);
+						Debug.println("DOC: "+result.doc(i).get("url"), 1);
 					}
 				}
 				writer.close();

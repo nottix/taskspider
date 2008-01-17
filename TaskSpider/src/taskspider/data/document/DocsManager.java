@@ -69,6 +69,7 @@ public class DocsManager {
 		
 		if((elements=page.getElements())!=null) {
 //			System.out.println("description: "+(description=getTagContent("meta", "description", elements)));
+			description=getTagContent("meta", "description", elements);
 			if(description!=null)
 				tempDoc.add(new Field("description", description, Field.Store.YES, Field.Index.TOKENIZED));
 			
@@ -76,6 +77,7 @@ public class DocsManager {
 		
 		if((elements=page.getElements())!=null) {
 //			System.out.println("keywords: "+(keywords=getTagContent("meta", "keywords", elements)));
+			keywords=getTagContent("meta", "keywords", elements);
 			if(keywords!=null)
 				tempDoc.add(new Field("keywords", keywords, Field.Store.YES, Field.Index.TOKENIZED));
 			
@@ -83,6 +85,7 @@ public class DocsManager {
 		
 		if((elements=page.getElements())!=null) {
 //			System.out.println("keyphrases: "+(keyphrases=getTagContent("meta", "keyphrases", elements)));
+			keyphrases=getTagContent("meta", "keyphrases", elements);
 			if(keyphrases!=null)
 				tempDoc.add(new Field("keyphrases", keyphrases, Field.Store.YES, Field.Index.TOKENIZED));
 			
@@ -90,6 +93,7 @@ public class DocsManager {
 		
 		if((elements=page.getElements())!=null) {
 //			System.out.println("body: "+(body=getTagContent("body", null, elements)));
+			body=getTagContent("body", null, elements);
 			if(body!=null)
 				tempDoc.add(new Field("body", body, Field.Store.YES, Field.Index.TOKENIZED));
 			

@@ -37,13 +37,13 @@ public class Testing {
 	 */
 	public static void main(String[] args) {
 		try {
-			Link[] links = { new Link("http://www.maglificiosalerno.it"), /*new Link("http://www.alessioluffarelli.it"), new Link("http://www.google.com"), new Link("http://www.ibm.com")*/ };
+			Link[] links = { new Link("http://www.mtv.it")/*new Link("http://www.beppegrillo.it") *//*new Link("http://www.maglificiosalerno.it"),*/ /*new Link("http://www.alessioluffarelli.it")/*, new Link("http://www.google.com"), new Link("http://www.ibm.com")*/ };
 			Spider spider = new Spider(links);
-			spider.setMaxLevel(3);
+			spider.setMaxLevel(1);
 			spider.start();
 			SpiderExplorer spiderExplorer = new SpiderExplorer(spider);
 			spiderExplorer.start();
-			Indexer indexer = new Indexer("http");
+			Indexer indexer = new Indexer("musica");
 			Vector<Document> docs = spiderExplorer.getDocs();
 			int start = 0;
 			int end = docs.size();
