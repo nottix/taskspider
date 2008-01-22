@@ -12,5 +12,7 @@
 			<attribute name="javadoc_location" value="http://www.cs.cmu.edu/~rcm/websphinx/doc/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/hrstc.jar"/>
+	<classpathentry kind="lib" path="lib/googleapi.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
