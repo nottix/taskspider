@@ -8,7 +8,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/googleapi.jar"/>
-	<classpathentry kind="lib" path="lib/lucene-demos-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/lucene-core-2.2.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
