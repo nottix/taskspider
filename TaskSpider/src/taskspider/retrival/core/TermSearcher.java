@@ -6,6 +6,7 @@ package taskspider.retrival.core;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.StringTokenizer;
 import java.io.*;
 
 import org.apache.lucene.analysis.Analyzer;
@@ -26,7 +27,7 @@ import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-import taskspider.retrival.wordnet.Syns2Index;
+import taskspider.retrival.wordnet.*;
 import taskspider.util.debug.Debug;
 import taskspider.util.properties.PropertiesReader;
 
@@ -65,22 +66,27 @@ public class TermSearcher {
 	 */
 	public int search(String queryString) {
 		try {
-			if(IndexReader.indexExists(taskspider.util.properties.PropertiesReader.getProperty("indexPath"))) {
+			if(IndexReader.indexExists(indexPath)) {
 				isearcher = new IndexSearcher(indexDir);
 
 				StandardAnalyzer analyzer = new StandardAnalyzer();
-				QueryParser parser = new QueryParser("url", analyzer);
+				QueryParser parser = new QueryParser("body", analyzer);
 				Query query = parser.parse(queryString);
 
+				Debug.println("Normal: "+query.toString(), 1);
 				result = isearcher.search(query);
 				Debug.println("Search hits: "+result.length(), 1);
 
-//				Query expandedQuery = this.expandQuery(queryString, result, analyzer, isearcher, query.getSimilarity(isearcher));
-//				result = isearcher.search(expandedQuery);
-//				Debug.println("Search with expanded query hits: "+result.length(), 1);
+				Query expandedQuery = this.expandQuery(query, query.toString(), "body");
+				Debug.println("Expanded: "+expandedQuery.toString(), 1);
+				result = isearcher.search(expandedQuery);
+				Debug.println("Search with expanded query hits: "+result.length(), 1);
 
 				isearcher.close();
 				return result.length();
+			}
+			else {
+				Debug.println("Doesn't exist", 1);
 			}
 		} catch (CorruptIndexException e) {
 			e.printStackTrace();
@@ -92,22 +98,32 @@ public class TermSearcher {
 		return 0;
 	}
 	
-	private Query expandQuery(String queryString, Hits hits, Analyzer analyzer, Searcher searcher, Similarity similarity) {
-        try {
-			Properties properties = new Properties();
-			properties.load( new FileInputStream( "conf/search.properties" ) );
-			String runTag = "conf/search.properties";
-//			properties.setProperty( Defs.RUN_TAG_FLD, runTag );
-//			
-//			QueryExpansion queryExpansion = new QueryExpansion(analyzer, searcher, similarity, properties);
-//			return queryExpansion.expandQuery(queryString, hits, properties);
+	private Query expandQuery(Query query, String queryString, String field) {
+		try {
+			String wnIndexPath = PropertiesReader.getProperty("wordnetIndexPath");
+			Directory wnIndexDir = FSDirectory.getDirectory(wnIndexPath);
+			IndexSearcher wnSearcher = new IndexSearcher(wnIndexDir);
+			StandardAnalyzer analyzer = new StandardAnalyzer();
 			
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			StringTokenizer tokens = new StringTokenizer(queryString);
+			Query[] queries = new Query[tokens.countTokens()];
+			String sub, fieldSub, termSub;
+			int dots, i=0;
+			
+			while(tokens.hasMoreTokens()) {
+				sub = tokens.nextToken();
+				dots = sub.indexOf(":");
+				termSub = sub.substring(dots+1);
+				fieldSub = sub.substring(0, dots);
+				Debug.println("Field: "+fieldSub+", Term: "+termSub, 1);
+				queries[i++]=SynExpand.expand(termSub, wnSearcher, analyzer, fieldSub, 0);
+				
+			}
+			
+			return query.combine(queries);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 		return null;
 	}
 }

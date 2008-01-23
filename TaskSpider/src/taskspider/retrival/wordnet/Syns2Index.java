@@ -99,7 +99,7 @@ public class Syns2Index
     	try {
 			// get command line arguments
 			String prologFilename = PropertiesReader.getProperty("prologFilename"); // name of file "wn_s.pl"
-			String indexDir = PropertiesReader.getProperty("wordnetIndexDir");
+			String indexDir = PropertiesReader.getProperty("wordnetIndexPath");
 
 			// ensure that the prolog file is readable
 			if (! (new File(prologFilename)).canRead())
