@@ -11,6 +11,7 @@ import java.io.*;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.queryParser.ParseException;
@@ -25,9 +26,7 @@ import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-import com.hrstc.lucene.queryexpansion.*;
-import com.hrstc.lucene.*;
-
+import taskspider.retrival.wordnet.Syns2Index;
 import taskspider.util.debug.Debug;
 import taskspider.util.properties.PropertiesReader;
 
@@ -66,21 +65,23 @@ public class TermSearcher {
 	 */
 	public int search(String queryString) {
 		try {
-			isearcher = new IndexSearcher(indexDir);
-			
-			StandardAnalyzer analyzer = new StandardAnalyzer();
-			QueryParser parser = new QueryParser("url", analyzer);
-		    Query query = parser.parse(queryString);
-			
-			result = isearcher.search(query);
-			Debug.println("Search hits: "+result.length(), 1);
-			
-			Query expandedQuery = this.expandQuery(queryString, result, analyzer, isearcher, query.getSimilarity(isearcher));
-			result = isearcher.search(expandedQuery);
-			Debug.println("Search with expanded query hits: "+result.length(), 1);
-			
-			isearcher.close();
-			return result.length();
+			if(IndexReader.indexExists(taskspider.util.properties.PropertiesReader.getProperty("indexPath"))) {
+				isearcher = new IndexSearcher(indexDir);
+
+				StandardAnalyzer analyzer = new StandardAnalyzer();
+				QueryParser parser = new QueryParser("url", analyzer);
+				Query query = parser.parse(queryString);
+
+				result = isearcher.search(query);
+				Debug.println("Search hits: "+result.length(), 1);
+
+//				Query expandedQuery = this.expandQuery(queryString, result, analyzer, isearcher, query.getSimilarity(isearcher));
+//				result = isearcher.search(expandedQuery);
+//				Debug.println("Search with expanded query hits: "+result.length(), 1);
+
+				isearcher.close();
+				return result.length();
+			}
 		} catch (CorruptIndexException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -96,16 +97,14 @@ public class TermSearcher {
 			Properties properties = new Properties();
 			properties.load( new FileInputStream( "conf/search.properties" ) );
 			String runTag = "conf/search.properties";
-			properties.setProperty( Defs.RUN_TAG_FLD, runTag );
-			
-			QueryExpansion queryExpansion = new QueryExpansion(analyzer, searcher, similarity, properties);
-			return queryExpansion.expandQuery(queryString, hits, properties);
+//			properties.setProperty( Defs.RUN_TAG_FLD, runTag );
+//			
+//			QueryExpansion queryExpansion = new QueryExpansion(analyzer, searcher, similarity, properties);
+//			return queryExpansion.expandQuery(queryString, hits, properties);
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		
