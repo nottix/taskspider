@@ -3,6 +3,7 @@
  */
 package taskspider.spider.core;
 
+import taskspider.controller.WebGraph;
 import taskspider.data.document.*;
 import taskspider.util.properties.PropertiesReader;
 import websphinx.Link;
@@ -11,6 +12,7 @@ import websphinx.Region;
 import websphinx.Text;
 import java.util.*;
 import org.apache.lucene.document.*;
+import java.util.Hashtable;
 
 /**
  * @author Simone Notargiacomo, Giuseppe Schipani
@@ -20,10 +22,12 @@ public class SpiderExplorer extends Thread {
 	private Spider spider;
 	private DocsManager docsManager;
 	private boolean interrupt;
+	private Hashtable<String, Page> pageTable;
 	
 	public SpiderExplorer(Spider spider) {
 		this.spider = spider;
 		docsManager = new DocsManager();
+		pageTable = new Hashtable<String, Page>();
 		resetInterrupt();
 		this.setDaemon(true);
 		
@@ -90,6 +94,8 @@ public class SpiderExplorer extends Thread {
 				Page page = link[i].getPage();
 				if(page!=null) {
 					docsManager.addDocument(page);
+					if(!pageTable.containsKey(page.getOrigin().toURL()))
+						pageTable.put(page.getOrigin().toURL(), page);
 					deepScan(page.getLinks());
 				}
 				/*if(link[i].getStatus()==LinkEvent.DOWNLOADED || link[i].getStatus()==LinkEvent.VISITED) {
@@ -99,6 +105,10 @@ public class SpiderExplorer extends Thread {
 				//System.out.print(i+", "+link[i].getHost()+", "+link[i].toDescription());
 			}
 		}
+	}
+	
+	public Page getPage(String url) {
+		return pageTable.get(url);
 	}
 	
 	public Vector<Document> getDocs() {

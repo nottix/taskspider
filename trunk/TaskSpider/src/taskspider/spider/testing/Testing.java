@@ -38,44 +38,44 @@ public class Testing {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		try {
-			if(!IndexReader.indexExists(taskspider.util.properties.PropertiesReader.getProperty("wordnetIndexPath"))) {
-				Syns2Index.generateIndex();
-			}
-			Link[] links = { new Link("http://www.mtv.com/") /*new Link("http://www.mtv.it")/*new Link("http://www.beppegrillo.it") *//*new Link("http://www.maglificiosalerno.it"),*/ /*new Link("http://www.alessioluffarelli.it")/*, new Link("http://www.google.com"), new Link("http://www.ibm.com")*/ };
-			Spider spider = new Spider(links);
-			spider.setMaxLevel(1);
-			spider.start();
-			SpiderExplorer spiderExplorer = new SpiderExplorer(spider);
-			spiderExplorer.start();
-			Indexer indexer = new Indexer("musica");
-			Vector<Document> docs = spiderExplorer.getDocs();
-			TermSearcher searcher = new TermSearcher("musica");
-			int start = 0;
-			int end = docs.size();
-			indexer.indexDocs(docs, start, end);
-			int retry=0;
-			while(start!=end || retry<4) {
-				if(start==end)
-					retry++;
-				else
-					retry=0;
-				System.out.println("start: "+start+", end: "+end);
-				
-				indexer.indexDocs(spiderExplorer.getDocs(), start, end);
-				Thread.sleep(2000);
-				start = end;
-				end = docs.size();
-				searcher.search("url:music AND body:music");
-				
-			}
-			spiderExplorer.interrupt();
-			System.out.println("STOPPED "+start+" "+end);
-			indexer.getDocument();
-			
-		}
-		catch(MalformedURLException ex) {ex.printStackTrace();}
-		catch(InterruptedException ex1) {ex1.printStackTrace();}
+//		try {
+//			if(!IndexReader.indexExists(taskspider.util.properties.PropertiesReader.getProperty("wordnetIndexPath"))) {
+//				Syns2Index.generateIndex();
+//			}
+//			Link[] links = { new Link("http://www.mtv.com/") /*new Link("http://www.mtv.it")/*new Link("http://www.beppegrillo.it") *//*new Link("http://www.maglificiosalerno.it"),*/ /*new Link("http://www.alessioluffarelli.it")/*, new Link("http://www.google.com"), new Link("http://www.ibm.com")*/ };
+//			Spider spider = new Spider(links);
+//			spider.setMaxLevel(1);
+//			spider.start();
+//			SpiderExplorer spiderExplorer = new SpiderExplorer(spider);
+//			spiderExplorer.start();
+//			Indexer indexer = new Indexer("musica", spiderExplorer);
+//			Vector<Document> docs = spiderExplorer.getDocs();
+//			TermSearcher searcher = new TermSearcher("musica");
+//			int start = 0;
+//			int end = docs.size();
+//			indexer.indexDocs(docs, start, end);
+//			int retry=0;
+//			while(start!=end || retry<4) {
+//				if(start==end)
+//					retry++;
+//				else
+//					retry=0;
+//				System.out.println("start: "+start+", end: "+end);
+//				
+//				indexer.indexDocs(spiderExplorer.getDocs(), start, end);
+//				Thread.sleep(2000);
+//				start = end;
+//				end = docs.size();
+//				searcher.search("url:music AND body:music");
+//				
+//			}
+//			spiderExplorer.interrupt();
+//			System.out.println("STOPPED "+start+" "+end);
+//			indexer.getDocument();
+//			
+//		}
+//		catch(MalformedURLException ex) {ex.printStackTrace();}
+//		catch(InterruptedException ex1) {ex1.printStackTrace();}
 	
 	}
 

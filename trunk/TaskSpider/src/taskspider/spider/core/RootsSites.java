@@ -2,8 +2,10 @@
  * @author Simone Notargiacomo, Giuseppe Schipani
  */
 package taskspider.spider.core;
+import java.net.MalformedURLException;
 import java.util.*;
 import com.google.soap.search.*;
+import websphinx.*;
 
 /**
  * @author Simone Notargiacomo, Giuseppe Schipani
@@ -12,9 +14,10 @@ import com.google.soap.search.*;
 
 public class RootsSites {
 	private GoogleSearchResult results;
-	private Vector<String> sitesSource = new Vector<String>();
+	private Vector<Link> sitesSource;
 	
 	public RootsSites(String searchKey){
+		sitesSource = new Vector<Link>();
 		GoogleSearch gg = new GoogleSearch();
 		gg.setKey("Qte9k4VQFHKgauaxU4FdkjjJwazm3vrg");
 		
@@ -28,12 +31,16 @@ public class RootsSites {
 		
 	}
 	
-	public Vector<String> getRoots(){
+	public Vector<Link> getRoots(){
 		
 		GoogleSearchResultElement[] re = results.getResultElements();
 		
-		for ( int i = 0; i < re.length; i++ ) {
-		 sitesSource.add(re[i].getURL());
+		try {
+			for ( int i = 0; i < re.length; i++ ) {
+			 sitesSource.add(new Link(re[i].getURL()));
+			}
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
 		}
 		
 		return this.sitesSource;
