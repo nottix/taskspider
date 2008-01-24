@@ -14,6 +14,7 @@ import java.util.*;
 import java.io.*;
 import java.text.*;
 
+import taskspider.controller.WebGraph;
 import taskspider.util.debug.*;
 
 /**

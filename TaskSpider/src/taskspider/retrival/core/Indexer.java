@@ -17,6 +17,8 @@ import org.apache.lucene.store.LockObtainFailedException;
 
 import taskspider.util.properties.PropertiesReader;
 import taskspider.util.debug.*;
+import taskspider.controller.WebGraph;
+import taskspider.spider.core.*;
 
 public class Indexer {
 	
@@ -27,14 +29,18 @@ public class Indexer {
 	private Hits result;
 	private IndexWriter writer, writerTemp;
 	private String task;
+	private SpiderExplorer spiderExplorer;
+	private WebGraph graph;
 	
-	public Indexer(String filename) {
+	public Indexer(String filename, SpiderExplorer spiderExplorer) {
 		try {
 			task = filename;
 			indexPath = PropertiesReader.getProperty("indexPath")+filename;
 			indexDir = FSDirectory.getDirectory(indexPath);
 			indexTempPath = PropertiesReader.getProperty("indexTempPath")+filename;
 			indexTempDir = FSDirectory.getDirectory(indexTempPath);
+			this.spiderExplorer = spiderExplorer;
+			graph = new WebGraph();
 			isearcher = null;
 			result = null;
 		} catch (IOException e) {
@@ -123,6 +129,10 @@ public class Indexer {
 		return 0;
 	}
 	
+	public WebGraph getWebGraph() {
+		return this.graph;
+	}
+	
 	public int updateIndex() {
 		try {
 			if(search(task, "url")!=0) {
@@ -135,11 +145,13 @@ public class Indexer {
 				for(int i=0; i<result.length(); i++) {
 					if( (num=isDocPresent(result.doc(i)))==-1 ) {
 						writer.addDocument(result.doc(i));
+						graph.addPage(spiderExplorer.getPage(result.doc(i).get("url")));
 						Debug.println("DOC: "+result.doc(i).get("url"), 1);
 						Debug.println("DATE: "+result.doc(i).get("date"), 1);
 					}
 					else {
 						Document doc;
+						graph.addPage(spiderExplorer.getPage(result.doc(i).get("url")));
 						if((doc=getDocument(num))!=null) {
 							if(doc.get("url").equals(result.doc(i).get("url"))) {
 								if( result.doc(i).get("date").equals("0") ) {

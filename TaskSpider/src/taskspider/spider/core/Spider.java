@@ -6,6 +6,7 @@ package taskspider.spider.core;
 import java.io.IOException;
 import websphinx.*;
 import taskspider.util.properties.PropertiesReader;
+import java.util.Vector;
 
 /**
  * @author Simone Notargiacomo, Giuseppe Schipani
@@ -17,12 +18,12 @@ public class Spider {
 	private String logPath;
 	private Thread thread;
 	
-	public Spider(Link[] links) {
+	public Spider(Vector<Link> links) {
 		if(crawler==null)
 			crawler = new Crawler();
 		
-		for(int i=0; i<links.length; i++) {
-			crawler.addRoot(links[i]);
+		for(int i=0; i<links.size(); i++) {
+			crawler.addRoot(links.get(i));
 		}
 		
 		crawler.addClassifier(new StandardClassifier());
@@ -30,7 +31,6 @@ public class Spider {
 			System.out.println("Error in properties file");
 		createLogger(logPath);
 		createThread();
-		
 	}
 	
 	private EventLog createLogger(String path) {
