@@ -6,6 +6,8 @@ package taskspider.controller;
 import java.net.MalformedURLException;
 import java.util.Vector;
 
+import javax.swing.JLabel;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 
@@ -33,6 +35,7 @@ public class Controller extends Thread{
 	private Vector<Document> docs;
 	private TermSearcher searcher;
 	private boolean interrupt;
+	private JLabel messageLabel = null;
 	
 	public Controller() {
 		links = null;
@@ -40,6 +43,10 @@ public class Controller extends Thread{
 		interrupt = false;
 		task = null;
 		this.setDaemon(true);
+	}
+	
+	public void setMessage(JLabel message) {
+		this.messageLabel = message;
 	}
 	
 	public void setLinks(Vector<Link> urls) {
@@ -84,7 +91,7 @@ public class Controller extends Thread{
 			searcher = new TermSearcher(task);
 			int start = 0;
 			int end = docs.size();
-			indexer.indexDocs(docs, start, end);
+			int ret = indexer.indexDocs(docs, start, end);
 			int retry=0;
 			while((start!=end || retry<4) && !interrupt) {
 				if(start==end)
@@ -92,10 +99,13 @@ public class Controller extends Thread{
 				else
 					retry=0;
 				System.out.println("start: "+start+", end: "+end);
-				indexer.indexDocs(spiderExplorer.getDocs(), start, end);
+				ret = indexer.indexDocs(spiderExplorer.getDocs(), start, end);
 				Thread.sleep(2000);
 				start = end;
 				end = docs.size();
+				if(ret!=0) {
+					this.messageLabel.setText("Pages indexed");
+				}
 				//searcher.search("url:foto AND body:foto");
 			}
 		}
@@ -107,6 +117,7 @@ public class Controller extends Thread{
 	
 	public void stopProcess() {
 		this.interrupt = true;
+		spiderExplorer.interrupt();
 		this.interrupt();
 	}
 	
