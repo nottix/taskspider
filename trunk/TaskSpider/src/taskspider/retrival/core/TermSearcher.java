@@ -82,7 +82,6 @@ public class TermSearcher {
 				result = isearcher.search(expandedQuery);
 				Debug.println("Search with expanded query hits: "+result.length(), 1);
 
-				isearcher.close();
 				return result.length();
 			}
 			else {
@@ -96,6 +95,15 @@ public class TermSearcher {
 			e.printStackTrace();
 		}
 		return 0;
+	}
+	
+	public void close() {
+		try {
+			isearcher.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private Query expandQuery(Query query, String queryString, String field) {

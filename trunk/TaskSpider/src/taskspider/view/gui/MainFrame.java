@@ -169,6 +169,8 @@ public class MainFrame extends JFrame {
 					new java.beans.PropertyChangeListener() {
 						public void propertyChange(java.beans.PropertyChangeEvent e) {
 							getGraph(); 
+							controller.search(queryField.getText());
+							controller.getGroupResult();
 						}
 					});
 			GridBagConstraints gridBagConstraints14 = new GridBagConstraints();
@@ -465,8 +467,10 @@ public class MainFrame extends JFrame {
 //				htmlPanel.setDocument(document, rendererContext);
 				
 				htmlPanel = new BrowserPanel();
+				
 //				htmlPanel.navigate("http://www.google.com");
 
+				htmlPanel.setEnabled(true);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -681,8 +685,12 @@ public class MainFrame extends JFrame {
 
 	public static void main(String args[]) {
 		try {
-			PlatformInit.getInstance().init(args, true);
-			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+//			PlatformInit.getInstance().init(args, true);
+			PlatformInit.getInstance().initExtensions();
+			PlatformInit.getInstance().initProtocols();
+			PlatformInit.getInstance().initSecurity();
+//			PlatformInit.getInstance().initLogging(args);
+//			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

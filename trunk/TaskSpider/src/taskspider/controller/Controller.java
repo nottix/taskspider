@@ -3,12 +3,15 @@
  */
 package taskspider.controller;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Vector;
+import java.util.Hashtable;
 
 import javax.swing.JLabel;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
 
 import taskspider.retrival.core.Indexer;
@@ -17,6 +20,7 @@ import taskspider.retrival.wordnet.Syns2Index;
 import taskspider.spider.core.Spider;
 import taskspider.spider.core.SpiderExplorer;
 import taskspider.spider.core.RootsSites;
+import org.apache.lucene.search.Hits;
 import taskspider.util.debug.Debug;
 import websphinx.Link;
 
@@ -42,6 +46,7 @@ public class Controller extends Thread{
 		maxLevel = 3;
 		interrupt = false;
 		task = null;
+		searcher = null;
 		this.setDaemon(true);
 	}
 	
@@ -61,6 +66,66 @@ public class Controller extends Thread{
 		if(maxLevel>=0 || maxLevel<=5)
 			this.maxLevel = maxLevel;
 	}		
+	
+	public int search(String query) {
+		return searcher.search(query);
+	}
+	
+	public Hits getResult() {
+		return searcher.getResult();
+	}
+	
+	public Vector<Document> getGroupResult() {
+		int index;
+		Hits hits = this.getResult();
+		Hashtable<Integer, Document> scanned = new Hashtable<Integer, Document>();
+		Vector<Document> result = new Vector<Document>();
+		try {
+			for(int i=0; i<hits.length(); i++) {
+				while((index=getElementWith(hits.doc(i), hits, scanned))>=0) {
+					result.add(hits.doc(i));
+					Debug.println(hits.doc(i).get("url"), 1);
+				}
+				Debug.println("null", 1);
+				result.add(null);
+			}
+		} catch (CorruptIndexException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	private int getElementWith(Document doc, Hits hits, Hashtable<Integer, Document> scanned) {
+		try {
+			for(int i=0; i<hits.length(); i++) {
+				int start, end;
+				start = hits.doc(i).get("url").indexOf(".")+1;
+				end = hits.doc(i).get("url").indexOf(".", start);
+				if(start<0 || end<0)
+					continue;
+				
+				Debug.println("KKKK: "+hits.doc(i).get("url").substring(start, end), 3);
+				if(doc.get("url").indexOf(hits.doc(i).get("url").substring(start, end))>=0) {
+					if(!scanned.containsKey(new Integer(i))) {
+						scanned.put(new Integer(i), hits.doc(i));
+						return i;
+					}
+						
+				}
+			}
+		} catch (CorruptIndexException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return -1;
+	}
 	
 	public void startTaskSpider() {
 		try {
