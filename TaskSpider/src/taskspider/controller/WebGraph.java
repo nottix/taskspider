@@ -41,6 +41,7 @@ public class WebGraph {
 		cellView = new DefaultCellViewFactory();
 		view = new GraphLayoutCache(model, cellView);
 		graph = new JGraph(model, view);
+		graph.setEditable(false);
 		cellTable = new Hashtable<String, DefaultGraphCell>();
 		edgeTable = new Hashtable<String, DefaultEdge>();
 		xCoord = 40;

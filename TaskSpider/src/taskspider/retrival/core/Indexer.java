@@ -113,10 +113,10 @@ public class Indexer {
 					writerTemp.addDocument(docs.get(i));
 //				}
 			}
-			int ret = writerTemp.docCount();
+			writerTemp.docCount();
 			writerTemp.close();
 			
-			updateIndex();
+			int ret = updateIndex();
 			//indexWriter.optimize(); se non ci sono più documenti da aggiungere
 			return ret;
 		} catch (CorruptIndexException e) {
@@ -169,6 +169,7 @@ public class Indexer {
 					}
 				}
 				writer.close();
+				return result.length();
 			}
 		} catch (CorruptIndexException e) {
 			e.printStackTrace();
