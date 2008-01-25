@@ -3,57 +3,45 @@
  */
 package taskspider.view.gui;
 
-import java.awt.BorderLayout;
-import javax.swing.JPanel;
-import javax.swing.JFrame;
-import java.awt.GridBagLayout;
-import javax.swing.JSplitPane;
-import java.awt.GridBagConstraints;
-import java.awt.ComponentOrientation;
 import java.awt.Dimension;
-import javax.swing.JTextField;
-import javax.swing.BoxLayout;
-import java.awt.Rectangle;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JToolBar;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.SwingUtilities;
-
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
-import javax.swing.JRadioButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.WindowConstants;
 import java.awt.Point;
+import java.awt.event.MouseEvent;
 import java.net.MalformedURLException;
-import java.awt.Event;
-import java.awt.event.*;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-
-import taskspider.controller.*;
-import taskspider.retrival.core.Indexer;
-import taskspider.retrival.core.TermSearcher;
-import taskspider.retrival.wordnet.Syns2Index;
-import taskspider.spider.core.Spider;
-import taskspider.spider.core.SpiderExplorer;
-import taskspider.util.debug.*;
-import websphinx.Link;
-import java.util.StringTokenizer;
 import javax.swing.JSlider;
-import org.jgraph.*;
-import org.jgraph.event.*;
-import org.jgraph.graph.*;
-import javax.swing.plaf.metal.*;
-import javax.swing.*;
-import javax.swing.JTree;
+import javax.swing.JSplitPane;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.WindowConstants;
+
+import org.jgraph.JGraph;
+import org.jgraph.event.GraphSelectionEvent;
+import org.jgraph.event.GraphSelectionListener;
+import org.jgraph.graph.DefaultGraphCell;
+import org.lobobrowser.gui.BrowserPanel;
+import org.lobobrowser.main.PlatformInit;
+
+import taskspider.controller.BrowserControl;
+import taskspider.controller.Controller;
+import taskspider.util.debug.Debug;
+import taskspider.util.properties.PropertiesReader;
+import websphinx.Link;
 
 /**
  * @author avenger
@@ -97,8 +85,6 @@ public class MainFrame extends JFrame {
 
 	private JSplitPane jSplitPane = null;
 
-	private JScrollPane jScrollPane = null;
-
 	private JButton searchButton = null;
 
 	private JPanel jPanel4 = null;
@@ -118,16 +104,21 @@ public class MainFrame extends JFrame {
 	private String selectedCell = "";  //  @jve:decl-index=0:
 
 	private JLabel messageLabel = null;
-
-	private JTree resultTree = null;
 	
+	private BrowserPanel htmlPanel = null;
+
+	private JCheckBox browserCheck = null;
+	
+	//private HtmlRendererContext rendererContext = null;
+
 	/**
 	 * This is the default constructor
 	 */
 	public MainFrame() {
 		super();
 		initialize();
-		this.pack();
+		this.setProperties();
+		//this.pack();
 	}
 
 	/**
@@ -136,11 +127,6 @@ public class MainFrame extends JFrame {
 	 * @return void
 	 */
 	private void initialize() {
-//		try {
-//		    UIManager.setLookAndFeel(javax.swing.plaf.metal.DefaultMetalTheme);
-//		} catch (Exception e) {
-//		   System.out.println(e.toString());
-//		}
 		this.setSize(1282, 795);
 		this.setLocation(new Point(200, 200));
 		this.setJMenuBar(getJJMenuBar());
@@ -171,6 +157,9 @@ public class MainFrame extends JFrame {
 	 */
 	private JPanel getJPanel() {
 		if (jPanel == null) {
+			GridBagConstraints gridBagConstraints16 = new GridBagConstraints();
+			gridBagConstraints16.gridx = 1;
+			gridBagConstraints16.gridy = 5;
 			GridBagConstraints gridBagConstraints15 = new GridBagConstraints();
 			gridBagConstraints15.gridx = 1;
 			gridBagConstraints15.gridy = 8;
@@ -261,6 +250,7 @@ public class MainFrame extends JFrame {
 			jPanel.add(getJPanel4(), gridBagConstraints21);
 			jPanel.add(getZoomSlider(), gridBagConstraints14);
 			jPanel.add(messageLabel, gridBagConstraints15);
+			jPanel.add(getBrowserCheck(), gridBagConstraints16);
 		}
 		return jPanel;
 	}
@@ -308,15 +298,9 @@ public class MainFrame extends JFrame {
 	 */
 	private JPanel getJPanel3() {
 		if (jPanel3 == null) {
-			GridBagConstraints gridBagConstraints8 = new GridBagConstraints();
-			gridBagConstraints8.fill = GridBagConstraints.BOTH;
-			gridBagConstraints8.gridy = 0;
-			gridBagConstraints8.weightx = 1.0;
-			gridBagConstraints8.weighty = 1.0;
-			gridBagConstraints8.gridx = 0;
 			jPanel3 = new JPanel();
-			jPanel3.setLayout(new GridBagLayout());
-			jPanel3.add(getJScrollPane(), gridBagConstraints8);
+			jPanel3.setLayout(new BoxLayout(getJPanel3(), BoxLayout.Y_AXIS));
+			jPanel3.add(getHtmlPanel(), null);
 		}
 		return jPanel3;
 	}
@@ -384,8 +368,14 @@ public class MainFrame extends JFrame {
 		if (rootsField == null) {
 			rootsField = new JTextField();
 			rootsField.setPreferredSize(new Dimension(400, 19));
-			rootsField.setEnabled(false);
+			rootsField.setEnabled(true);
 			rootsField.setColumns(20);
+			rootsField.addPropertyChangeListener("enabled",
+					new java.beans.PropertyChangeListener() {
+						public void propertyChange(java.beans.PropertyChangeEvent e) {
+							rootsField.setText(""); 
+						}
+					});
 		}
 		return rootsField;
 	}
@@ -445,20 +435,46 @@ public class MainFrame extends JFrame {
 		return jSplitPane;
 	}
 
-	/**
-	 * This method initializes jScrollPane	
-	 * 	
-	 * @return javax.swing.JScrollPane	
-	 */
-	private JScrollPane getJScrollPane() {
-		if (jScrollPane == null) {
-			jScrollPane = new JScrollPane();
-			jScrollPane.setPreferredSize(new Dimension(200, 600));
-			jScrollPane.setViewportView(getResultTree());
-		}
-		return jScrollPane;
-	}
+	private BrowserPanel getHtmlPanel() {
+		if(htmlPanel == null) {
+			try {
+//				String uri = "http://lobobrowser.org/java-browser.jsp";
+//				URL url = new URL(uri);
+//				URLConnection connection = url.openConnection();
+//				InputStream in = connection.getInputStream();
+//				Reader reader = new InputStreamReader(in);
+//
+//				htmlPanel = new HtmlPanel();
+//				rendererContext = new LocalHtmlRendererContext(htmlPanel);
+//				//SimpleHtmlRendererContext rendererContext = new SimpleHtmlRendererContext(htmlPanel);
+//				htmlPanel.setPreferredSize(new Dimension(800, 600));
+//				htmlPanel.setBackground(Color.black);
+//				htmlPanel.setBorder(BorderFactory.createTitledBorder(new EtchedBorder(EtchedBorder.RAISED), "Embedded browser"));
+//				htmlPanel.setLayout(new BoxLayout(getJPanel3(), BoxLayout.Y_AXIS));
+//				htmlPanel.add(new JButton(), null);
+//				
+//				// InputSourceImpl constructor with URI recommended
+//				// so the renderer can resolve page component URLs.
+//				InputSource is = new InputSourceImpl(reader, uri);
+//				DocumentBuilderImpl builder = new DocumentBuilderImpl(rendererContext.getUserAgentContext(), rendererContext);
+//				Document document = builder.parse(is);
+//				in.close();
+//
+//				// Set the document in the HtmlPanel. This
+//				// is what lets the document render.
+//				htmlPanel.setDocument(document, rendererContext);
+				
+				htmlPanel = new BrowserPanel();
+//				htmlPanel.navigate("http://www.google.com");
 
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return htmlPanel;
+	}
+	
 	/**
 	 * This method initializes searchButton	
 	 * 	
@@ -639,18 +655,39 @@ public class MainFrame extends JFrame {
 	}
 
 	/**
-	 * This method initializes resultTree	
+	 * This method initializes browserCheck	
 	 * 	
-	 * @return javax.swing.JTree	
+	 * @return javax.swing.JCheckBox	
 	 */
-	private JTree getResultTree() {
-		if (resultTree == null) {
-			resultTree = new JTree();
+	private JCheckBox getBrowserCheck() {
+		if (browserCheck == null) {
+			browserCheck = new JCheckBox();
+			browserCheck.setText("Embedded browser");
 		}
-		return resultTree;
+		return browserCheck;
+	}
+	
+	private void setProperties() {
+		if(PropertiesReader.getProperty("manualRoots").equals("1"))
+			rootsCheck.setSelected(true);
+		else
+			rootsCheck.setSelected(false);
+		
+		if(PropertiesReader.getProperty("embeddedBrowser").equals("1"))
+			browserCheck.setSelected(true);
+		else
+			browserCheck.setSelected(false);
 	}
 
 	public static void main(String args[]) {
+		try {
+			PlatformInit.getInstance().init(args, true);
+			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				MainFrame thisClass = new MainFrame();
@@ -659,5 +696,12 @@ public class MainFrame extends JFrame {
 			}
 		});
 	}
+	
+//	private static class LocalHtmlRendererContext extends SimpleHtmlRendererContext {
+//		// Override methods here to implement browser functionality
+//		public LocalHtmlRendererContext(HtmlPanel contextComponent) {
+//			super(contextComponent);
+//		}
+//	}
 
 }  //  @jve:decl-index=0:visual-constraint="10,11"
