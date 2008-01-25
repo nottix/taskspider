@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="taskspider/view/gui/JBrowser.java" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/websphinx.jar" sourcepath="lib/src/websphinx">
 		<attributes>
@@ -14,5 +14,7 @@
 			<attribute name="javadoc_location" value="http://www.jgraph.com/doc/jgraph/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/lobo-pub.jar"/>
+	<classpathentry kind="lib" path="lib/lobo.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
