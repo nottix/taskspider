@@ -67,7 +67,15 @@ public class Controller extends Thread{
 			this.maxLevel = maxLevel;
 	}		
 	
+	public int search(String task, String query) {
+		if(searcher==null)
+			searcher = new TermSearcher(task);
+		return searcher.search(query);
+	}
+	
 	public int search(String query) {
+		if(searcher==null)
+			searcher = new TermSearcher(task);
 		return searcher.search(query);
 	}
 	
