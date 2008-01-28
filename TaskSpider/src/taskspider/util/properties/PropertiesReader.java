@@ -24,9 +24,9 @@ public class PropertiesReader {
 			if(id=="" || id==null)
 				return null;
 			if(file==null) {
-//				file = new File(System.getProperty("user.dir")+"/conf/config.properties");
+				file = new File(System.getProperty("user.dir")+"/conf/config.properties");
 				System.out.println(System.getProperty("user.dir"));
-				file = new File("/var/lib/tomcat5.5/webapps/taskspider/WEB-INF/conf/config.properties");
+//				file = new File("/var/lib/tomcat5.5/webapps/taskspider/WEB-INF/conf/config.properties");
 				fis = new FileInputStream(file);
 			}
 			if(properties==null) {

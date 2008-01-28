@@ -82,10 +82,10 @@ public class SpiderExplorer extends Thread {
 		spider.stop();
 	}
 	
-	public void interrupt() {
-		System.out.println("SET");
+	public void stopProcess() {
 		setInterrupt();
 		spider.stop();
+		this.interrupt();
 	}
 	
 	private void deepScan(Link[] link) {

@@ -32,7 +32,7 @@ public class WebGraph {
 	private DefaultCellViewFactory cellView;
 	private Hashtable<String, DefaultGraphCell> cellTable;
 	private Hashtable<String, DefaultEdge> edgeTable;
-	private int xCoord, yCoord;
+	private int xCoord, yCoord, inc, counter;
 	
 	private boolean ok = true;
 	
@@ -46,6 +46,8 @@ public class WebGraph {
 		edgeTable = new Hashtable<String, DefaultEdge>();
 		xCoord = 40;
 		yCoord = 50;
+		inc = 0;
+		counter = 0;
 	}
 	
 	public void setScale(double val) {
@@ -53,48 +55,61 @@ public class WebGraph {
 	}
 	
 	private int getNextX() {
-		if(yCoord >= 400) {
+		if(yCoord >= 2000) {
+			counter++;
 			yCoord = 50;
-			return xCoord += 230;
+			inc = 0;
+			xCoord = 400*counter;
+			return xCoord;
 		}
+		xCoord += inc;
+		inc++;
 		return xCoord;
 	}
 	
 	private int getNextY() {
-		return yCoord += 80;
+		return yCoord += 40;
 	}
 	
 	public int addNode(String source, String target) {
 		
 		if(edgeTable.containsKey(source+target) || edgeTable.containsKey(target+source)
-				|| source.equals(target))
+				|| source.equals(target) )
 			return -1;
-		
-		Debug.println("SOURCE: "+source+", TARGET: "+target, 1);
-		
-		DefaultGraphCell[] cells = new DefaultGraphCell[3];
-		if(cellTable.containsKey(source)) {
-			cells[0] = cellTable.get(source);
+		else if((source.endsWith(".html") || source.endsWith(".htm") ||
+				source.endsWith("/") ||
+				source.endsWith(".php") || source.endsWith(".jsp") ||
+				source.endsWith(".asp") || source.endsWith(".aspx")) &&
+				(target.endsWith(".html") || target.endsWith(".htm") ||
+				target.endsWith(".php") || target.endsWith(".jsp") ||
+				target.endsWith(".asp") || target.endsWith(".aspx")) ) {
+			
+			Debug.println("SOURCE: "+source+", TARGET: "+target, 1);
+			
+			DefaultGraphCell[] cells = new DefaultGraphCell[3];
+			if(cellTable.containsKey(source)) {
+				cells[0] = cellTable.get(source);
+			}
+			else
+				cells[0] = this.createVertex(source, getNextX(), getNextY(), 300, 20, Color.RED, true);
+			
+			if(cellTable.containsKey(target))
+				cells[1] = cellTable.get(target);
+			else
+				cells[1] = this.createVertex(target, getNextX(), getNextY(), 300, 20, Color.ORANGE, true);
+			
+			DefaultEdge edge = new DefaultEdge();
+			edge.setSource(cells[0].getChildAt(0));
+			edge.setTarget(cells[1].getChildAt(0));
+			cells[2] = edge;
+			int arrow = GraphConstants.ARROW_NONE;
+			GraphConstants.setLineEnd(edge.getAttributes(), arrow);
+			GraphConstants.setEndFill(edge.getAttributes(), true);
+	
+			edgeTable.put(source+target, edge);
+			
+			graph.getGraphLayoutCache().insert(cells);
 		}
-		else
-			cells[0] = this.createVertex(source, getNextX(), getNextY(), 200, 20, Color.RED, true);
-		
-		if(cellTable.containsKey(target))
-			cells[1] = cellTable.get(target);
-		else
-			cells[1] = this.createVertex(target, getNextX(), getNextY(), 200, 20, Color.ORANGE, true);
-		
-		DefaultEdge edge = new DefaultEdge();
-		edge.setSource(cells[0].getChildAt(0));
-		edge.setTarget(cells[1].getChildAt(0));
-		cells[2] = edge;
-		int arrow = GraphConstants.ARROW_NONE;
-		GraphConstants.setLineEnd(edge.getAttributes(), arrow);
-		GraphConstants.setEndFill(edge.getAttributes(), true);
-
-		edgeTable.put(source+target, edge);
-		
-		graph.getGraphLayoutCache().insert(cells);
 		 
 		return 0;
 	}

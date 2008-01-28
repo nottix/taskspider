@@ -9,6 +9,7 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.net.MalformedURLException;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -168,9 +169,11 @@ public class MainFrame extends JFrame {
 			messageLabel.addPropertyChangeListener("text",
 					new java.beans.PropertyChangeListener() {
 						public void propertyChange(java.beans.PropertyChangeEvent e) {
-							getGraph(); 
-							controller.search(queryField.getText());
-							controller.getGroupResult();
+							if(e.getNewValue().equals("Pages indexed")) {
+								getGraph(); 
+								controller.search(queryField.getText());
+								controller.getGroupResult();
+							}
 						}
 					});
 			GridBagConstraints gridBagConstraints14 = new GridBagConstraints();
@@ -508,6 +511,7 @@ public class MainFrame extends JFrame {
 							controller.setLinks(links);
 						}
 						controller.start();
+						messageLabel.setText("Searching...");
 					}
 				}
 			});
@@ -552,6 +556,7 @@ public class MainFrame extends JFrame {
 			cancelButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					controller.stopProcess();
+					messageLabel.setText("Search stopped!");
 				}
 			});
 		}
@@ -608,14 +613,22 @@ public class MainFrame extends JFrame {
 						DefaultGraphCell cell = (DefaultGraphCell)graph.getSelectionCellAt(e.getPoint());
 						if(cell!=null) {
 							Debug.println("Selected cell is: "+(selectedCell=cell.toString()),1);
-							BrowserControl.displayURL("", selectedCell);
+							if(browserCheck.isSelected()) {
+								try {
+									htmlPanel.navigate(selectedCell);
+								} catch (MalformedURLException e1) {
+									e1.printStackTrace();
+								}
+							}
+							else
+								BrowserControl.displayURL("", selectedCell);
 						}
 						else
 							selectedCell = "";
 						
 					}
 			    }
-
+				
 			    public void mousePressed(MouseEvent e) {   
 			    }
 			    
@@ -627,6 +640,22 @@ public class MainFrame extends JFrame {
 			    
 			    public void mouseExited(MouseEvent e) {  
 			    }
+			});
+			
+			graph.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+				public void mouseWheelMoved(MouseWheelEvent e) {
+					Debug.println("Wheel: "+e.getWheelRotation()+", SCALE: "+graph.getScale(), 1);
+					if(e.getWheelRotation()<0) {
+						graph.setScale(graph.getScale()+0.4);
+						zoomSlider.setValue((int)(graph.getScale()*10));
+					}
+					else {
+						graph.setScale(graph.getScale()-0.4);
+						zoomSlider.setValue((int)(graph.getScale()*10));
+					}
+					graphScroll.setViewportView(graph);
+					
+				}
 			});
 
 		}
@@ -689,7 +718,8 @@ public class MainFrame extends JFrame {
 			PlatformInit.getInstance().initExtensions();
 			PlatformInit.getInstance().initProtocols();
 			PlatformInit.getInstance().initSecurity();
-//			PlatformInit.getInstance().initLogging(args);
+			String[] arg = {"-debug"};
+			PlatformInit.getInstance().initLogging(arg);
 //			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
