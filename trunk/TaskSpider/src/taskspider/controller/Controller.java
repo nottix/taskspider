@@ -190,7 +190,7 @@ public class Controller extends Thread{
 	
 	public void stopProcess() {
 		this.interrupt = true;
-		spiderExplorer.interrupt();
+		spiderExplorer.stopProcess();
 		this.interrupt();
 	}
 	
