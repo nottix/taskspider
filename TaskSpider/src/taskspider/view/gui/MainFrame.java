@@ -44,6 +44,8 @@ import taskspider.util.debug.Debug;
 import taskspider.util.properties.PropertiesReader;
 import websphinx.Link;
 
+import org.apache.lucene.document.Document;
+
 /**
  * @author avenger
  *
@@ -109,6 +111,10 @@ public class MainFrame extends JFrame {
 	private BrowserPanel htmlPanel = null;
 
 	private JCheckBox browserCheck = null;
+
+	private JPanel jPanel5 = null;
+
+	private JCheckBox frameCheck = null;
 	
 	//private HtmlRendererContext rendererContext = null;
 
@@ -133,7 +139,7 @@ public class MainFrame extends JFrame {
 		this.setJMenuBar(getJJMenuBar());
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		this.setContentPane(getJContentPane());
-		this.setTitle("JFrame");
+		this.setTitle("TaskSpider");
 		this.setVisible(true);
 	}
 
@@ -158,12 +164,12 @@ public class MainFrame extends JFrame {
 	 */
 	private JPanel getJPanel() {
 		if (jPanel == null) {
-			GridBagConstraints gridBagConstraints16 = new GridBagConstraints();
-			gridBagConstraints16.gridx = 1;
-			gridBagConstraints16.gridy = 5;
+			GridBagConstraints gridBagConstraints17 = new GridBagConstraints();
+			gridBagConstraints17.gridx = 1;
+			gridBagConstraints17.gridy = 5;
 			GridBagConstraints gridBagConstraints15 = new GridBagConstraints();
 			gridBagConstraints15.gridx = 1;
-			gridBagConstraints15.gridy = 8;
+			gridBagConstraints15.gridy = 9;
 			messageLabel = new JLabel();
 			messageLabel.setText("");
 			messageLabel.addPropertyChangeListener("text",
@@ -171,14 +177,31 @@ public class MainFrame extends JFrame {
 						public void propertyChange(java.beans.PropertyChangeEvent e) {
 							if(e.getNewValue().equals("Pages indexed")) {
 								getGraph(); 
-								controller.search(queryField.getText());
-								controller.getGroupResult();
+//								controller.search(queryField.getText());
+//								try {
+//									Thread.sleep(2000);
+//								} catch (InterruptedException e2) {
+//									// TODO Auto-generated catch block
+//									e2.printStackTrace();
+//								}
+								//controller.getGroupResult();
+								if(browserCheck.isSelected()) {
+									try {
+										htmlPanel.navigate(controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0"));
+									} catch (MalformedURLException e1) {
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}
+								}
+								else {
+									BrowserControl.displayURL("", controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0"));
+								}
 							}
 						}
 					});
 			GridBagConstraints gridBagConstraints14 = new GridBagConstraints();
 			gridBagConstraints14.fill = GridBagConstraints.BOTH;
-			gridBagConstraints14.gridy = 7;
+			gridBagConstraints14.gridy = 8;
 			gridBagConstraints14.weightx = 1.0;
 			gridBagConstraints14.insets = new Insets(4, 0, 4, 0);
 			gridBagConstraints14.gridx = 1;
@@ -186,7 +209,7 @@ public class MainFrame extends JFrame {
 			gridBagConstraints21.gridx = 1;
 			gridBagConstraints21.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints21.insets = new Insets(4, 0, 4, 0);
-			gridBagConstraints21.gridy = 6;
+			gridBagConstraints21.gridy = 7;
 			GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
 			gridBagConstraints11.fill = GridBagConstraints.VERTICAL;
 			gridBagConstraints11.gridy = 4;
@@ -255,7 +278,7 @@ public class MainFrame extends JFrame {
 			jPanel.add(getJPanel4(), gridBagConstraints21);
 			jPanel.add(getZoomSlider(), gridBagConstraints14);
 			jPanel.add(messageLabel, gridBagConstraints15);
-			jPanel.add(getBrowserCheck(), gridBagConstraints16);
+			jPanel.add(getJPanel5(), gridBagConstraints17);
 		}
 		return jPanel;
 	}
@@ -586,7 +609,14 @@ public class MainFrame extends JFrame {
 			jButton.setText("Update");
 			jButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					getGraph();
+					//getGraph();
+					controller.search(queryField.getText());
+					Vector<Document> docs = controller.getGroupResult();
+					for(int i=0; i<docs.size(); i++) {
+						if(docs.get(i)==null)
+							continue;
+						System.out.println("docs["+i+"]: "+docs.get(i).get("url"));
+					}
 				}
 			});
 		}
@@ -646,11 +676,11 @@ public class MainFrame extends JFrame {
 				public void mouseWheelMoved(MouseWheelEvent e) {
 					Debug.println("Wheel: "+e.getWheelRotation()+", SCALE: "+graph.getScale(), 1);
 					if(e.getWheelRotation()<0) {
-						graph.setScale(graph.getScale()+0.4);
+						graph.setScale(graph.getScale()+0.1);
 						zoomSlider.setValue((int)(graph.getScale()*10));
 					}
 					else {
-						graph.setScale(graph.getScale()-0.4);
+						graph.setScale(graph.getScale()-0.1);
 						zoomSlider.setValue((int)(graph.getScale()*10));
 					}
 					graphScroll.setViewportView(graph);
@@ -710,6 +740,45 @@ public class MainFrame extends JFrame {
 			browserCheck.setSelected(true);
 		else
 			browserCheck.setSelected(false);
+		
+		if(PropertiesReader.getProperty("browserWithFrame").equals("1"))
+			frameCheck.setSelected(true);
+		else
+			frameCheck.setSelected(false);
+	}
+
+	/**
+	 * This method initializes jPanel5	
+	 * 	
+	 * @return javax.swing.JPanel	
+	 */
+	private JPanel getJPanel5() {
+		if (jPanel5 == null) {
+			GridBagConstraints gridBagConstraints16 = new GridBagConstraints();
+			gridBagConstraints16.gridx = 1;
+			gridBagConstraints16.gridy = 0;
+			GridBagConstraints gridBagConstraints8 = new GridBagConstraints();
+			gridBagConstraints8.gridx = -1;
+			gridBagConstraints8.gridy = -1;
+			jPanel5 = new JPanel();
+			jPanel5.setLayout(new GridBagLayout());
+			jPanel5.add(getBrowserCheck(), gridBagConstraints8);
+			jPanel5.add(getFrameCheck(), gridBagConstraints16);
+		}
+		return jPanel5;
+	}
+
+	/**
+	 * This method initializes frameCheck	
+	 * 	
+	 * @return javax.swing.JCheckBox	
+	 */
+	private JCheckBox getFrameCheck() {
+		if (frameCheck == null) {
+			frameCheck = new JCheckBox();
+			frameCheck.setText("Browser with frame");
+		}
+		return frameCheck;
 	}
 
 	public static void main(String args[]) {

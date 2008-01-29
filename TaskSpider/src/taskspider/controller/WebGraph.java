@@ -73,19 +73,20 @@ public class WebGraph {
 	
 	public int addNode(String source, String target) {
 		
+		Debug.println("SOURCE: "+source+", TARGET: "+target, 1);
+		
 		if(edgeTable.containsKey(source+target) || edgeTable.containsKey(target+source)
 				|| source.equals(target) )
 			return -1;
-		else if((source.endsWith(".html") || source.endsWith(".htm") ||
-				source.endsWith("/") ||
-				source.endsWith(".php") || source.endsWith(".jsp") ||
-				source.endsWith(".asp") || source.endsWith(".aspx")) &&
-				(target.endsWith(".html") || target.endsWith(".htm") ||
-				target.endsWith(".php") || target.endsWith(".jsp") ||
-				target.endsWith(".asp") || target.endsWith(".aspx")) ) {
-			
-			Debug.println("SOURCE: "+source+", TARGET: "+target, 1);
-			
+//		else if((source.endsWith(".html") || source.endsWith(".htm") ||
+//				source.endsWith("/") ||
+//				source.endsWith(".php") || source.endsWith(".jsp") ||
+//				source.endsWith(".asp") || source.endsWith(".aspx")) &&
+//				(target.endsWith(".html") || target.endsWith(".htm") ||
+//				target.endsWith(".php") || target.endsWith(".jsp") ||
+//				target.endsWith(".asp") || target.endsWith(".aspx")) ) {
+//			
+		else if(source.indexOf("?")<0 && target.indexOf("?")<0 ) { 
 			DefaultGraphCell[] cells = new DefaultGraphCell[3];
 			if(cellTable.containsKey(source)) {
 				cells[0] = cellTable.get(source);

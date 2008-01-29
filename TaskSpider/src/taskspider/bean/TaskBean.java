@@ -99,7 +99,7 @@ public class TaskBean{
 			docs.add(new Document());
 			return docs;
 		}
-		results = (Vector<Document>)controller.getGroupResult().clone();
+		results = (Vector<Document>)controller.getGroupResult();
 		
 		return this.results;
 	} 
