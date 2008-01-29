@@ -22,6 +22,7 @@ import taskspider.spider.core.SpiderExplorer;
 import taskspider.spider.core.RootsSites;
 import org.apache.lucene.search.Hits;
 import taskspider.util.debug.Debug;
+import taskspider.util.properties.*;
 import websphinx.Link;
 
 /**
@@ -40,6 +41,7 @@ public class Controller extends Thread{
 	private TermSearcher searcher;
 	private boolean interrupt;
 	private JLabel messageLabel = null;
+	private String jspUrl;
 	
 	public Controller() {
 		links = null;
@@ -47,7 +49,12 @@ public class Controller extends Thread{
 		interrupt = false;
 		task = null;
 		searcher = null;
+		jspUrl = PropertiesReader.getProperty("jspUrl");
 		this.setDaemon(true);
+	}
+	
+	public String getQueryString(String task, String query, String frame) {
+		return this.jspUrl+"?task="+task+"&query="+query+"&frame="+frame;
 	}
 	
 	public void setMessage(JLabel message) {
@@ -84,19 +91,25 @@ public class Controller extends Thread{
 	}
 	
 	public Vector<Document> getGroupResult() {
-		int index;
+		int index, aux=0;
 		Hits hits = this.getResult();
 		Hashtable<Integer, Document> scanned = new Hashtable<Integer, Document>();
 		Vector<Document> result = new Vector<Document>();
+		result.add(null);
 		try {
 			for(int i=0; i<hits.length(); i++) {
 				while((index=getElementWith(hits.doc(i), hits, scanned))>=0) {
-					result.add(hits.doc(i));
-					Debug.println(hits.doc(i).get("url"), 1);
+					result.add(hits.doc(index));
+					Debug.println(hits.doc(index).get("url"), 1);
+					aux = 1;
 				}
-				Debug.println("null", 1);
-				result.add(null);
+				if(aux==1) {
+					Debug.println("null", 1);
+					result.add(null);
+				}
+				aux=0;
 			}
+			return result;
 		} catch (CorruptIndexException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
