@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<project name="TaskSpider" default="Compila" basedir=".">
+	<property name="name" value="taskspider"/>
+	<property name="src" value="./src"/>
+	<property name="bin" value="./bin"/>
+	<property name="lib" value="./lib"/>
+	<property name="buildweb" value="./web"/>
+	<property name="tomcat" value="/var/lib/tomcat5.5"/>
+	<property name="ejblib" value="/usr/share/tomcat5.5/common/lib"/>
+
+	<path id="compile.classpath">
+		<pathelement path="${buildweb}" />
+		<fileset dir="${ejblib}">
+        		<include name="*.jar" />
+		</fileset>
+		<fileset dir="${lib}">
+		        		<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="Compila" >
+		<mkdir dir="${buildweb}/WEB-INF/classes"/>
+		<javac debug="true" deprecation="true" destdir="${buildweb}/WEB-INF/classes" srcdir="${src}">
+			<classpath refid="compile.classpath">
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="Deploy">
+		<delete file="./${name}.war"/>
+		<mkdir dir="${buildweb}/WEB-INF/conf"/>
+		<copy preservelastmodified="true" todir="${buildweb}/WEB-INF/conf">
+	          <fileset dir="./conf">
+	              <include name="*.*" />
+	          </fileset>
+		</copy>
+		<mkdir dir="${buildweb}/WEB-INF/lib"/>
+		<copy preservelastmodified="true" todir="${buildweb}/WEB-INF/lib">
+	          <fileset dir="./lib">
+	              <include name="*.*" />
+	          </fileset>
+		</copy>
+		<mkdir dir="${buildweb}/WEB-INF/wordnet"/>
+		<copy preservelastmodified="true" todir="${buildweb}/WEB-INF/wordnet">
+	          <fileset dir="./wordnet">
+	              <include name="*.*" />
+	          </fileset>
+		</copy>
+		<jar basedir="${buildweb}" jarfile="./${name}.war"/>
+	</target>
+
+	<target name="TomcatDeploy">
+		<delete dir="${tomcat}/webapps/${name}" />
+		<delete file="${tomcat}/webapps/${name}.war"/>
+		<jar basedir="${buildweb}" jarfile="./${name}.war"/>
+		<copy file="./${name}.war" overwrite="true" todir="${tomcat}/webapps"/>
+	</target>
+
+	<target name="DeleteClasses">
+		<delete dir="${buildweb}/WEB-INF/classes" />
+	</target>
+	
+	<target name="Install">
+		<mkdir dir="/tmp/taskspider"/>	
+	</target>
+</project>
