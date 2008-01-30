@@ -51,7 +51,6 @@
 	</target>
 
 	<target name="TomcatDeploy">
-		<delete dir="${tomcat}/webapps/${name}" />
 		<delete file="${tomcat}/webapps/${name}.war"/>
 		<jar basedir="${buildweb}" jarfile="./${name}.war"/>
 		<copy file="./${name}.war" overwrite="true" todir="${tomcat}/webapps"/>
