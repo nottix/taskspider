@@ -86,7 +86,8 @@ public class WebGraph {
 //				target.endsWith(".php") || target.endsWith(".jsp") ||
 //				target.endsWith(".asp") || target.endsWith(".aspx")) ) {
 //			
-		else if(source.indexOf("?")<0 && target.indexOf("?")<0 ) { 
+		else if(source.indexOf("?")<0 && target.indexOf("?")<0 &&
+				source.indexOf(".js")<0 && target.indexOf(".js")<0) { 
 			DefaultGraphCell[] cells = new DefaultGraphCell[3];
 			if(cellTable.containsKey(source)) {
 				cells[0] = cellTable.get(source);
@@ -110,6 +111,7 @@ public class WebGraph {
 			edgeTable.put(source+target, edge);
 			
 			graph.getGraphLayoutCache().insert(cells);
+			graph.getGraphLayoutCache().toFront(cells);
 		}
 		 
 		return 0;

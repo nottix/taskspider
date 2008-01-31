@@ -4,6 +4,8 @@
 package taskspider.spider.core;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+
 import websphinx.*;
 import taskspider.util.properties.PropertiesReader;
 import java.util.Vector;
@@ -18,12 +20,17 @@ public class Spider {
 	private String logPath;
 	private Thread thread;
 	
-	public Spider(Vector<Link> links) {
+	public Spider(Vector<String> links) {
 		if(crawler==null)
 			crawler = new Crawler();
 		
-		for(int i=0; i<links.size(); i++) {
-			crawler.addRoot(links.get(i));
+		try {
+			for(int i=0; i<links.size(); i++) {
+				crawler.addRoot(new Link(links.get(i)));
+			}
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		crawler.addClassifier(new StandardClassifier());

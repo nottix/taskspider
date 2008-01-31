@@ -23,6 +23,7 @@ import taskspider.spider.core.RootsSites;
 import org.apache.lucene.search.Hits;
 import taskspider.util.debug.Debug;
 import taskspider.util.properties.*;
+import taskspider.view.gui.TaskGraph;
 import websphinx.Link;
 
 /**
@@ -32,7 +33,7 @@ import websphinx.Link;
 public class Controller extends Thread{
 
 	private Spider spider;
-	private Vector<Link> links;
+	private Vector<String> links;
 	private SpiderExplorer spiderExplorer;
 	private Indexer indexer;
 	private String task;
@@ -54,14 +55,16 @@ public class Controller extends Thread{
 	}
 	
 	public String getQueryString(String task, String query, String frame) {
-		return this.jspUrl+"?task="+task+"&query="+query+"&frame="+frame;
+		task = task.replaceAll(" ", "%20");
+		query = query.replaceAll(" ", "%20");
+		return this.jspUrl+"?task="+task+"&query="+query+"&frame="+frame+"&index=0&";
 	}
 	
 	public void setMessage(JLabel message) {
 		this.messageLabel = message;
 	}
 	
-	public void setLinks(Vector<Link> urls) {
+	public void setLinks(Vector<String> urls) {
 		links = urls;
 	}
 	
@@ -212,12 +215,12 @@ public class Controller extends Thread{
 		this.startTaskSpider();
 	}
 	
-	public WebGraph getWebGraph() {
+	public TaskGraph getWebGraph() {
 		return indexer.getWebGraph();
 	}
 	
-	public void setScale(double val) {
-		indexer.getWebGraph().setScale(val);
-	}
+//	public void setScale(double val) {
+//		indexer.getWebGraph().setScale(val);
+//	}
 	
 }

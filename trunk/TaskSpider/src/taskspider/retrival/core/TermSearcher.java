@@ -68,6 +68,8 @@ public class TermSearcher {
 		try {
 			if(IndexReader.indexExists(indexPath)) {
 				isearcher = new IndexSearcher(indexDir);
+				
+				queryString = queryString.replaceAll("%20", " ");
 
 				StandardAnalyzer analyzer = new StandardAnalyzer();
 				QueryParser parser = new QueryParser("body", analyzer);

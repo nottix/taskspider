@@ -2,6 +2,7 @@
  * @author Simone Notargiacomo, Giuseppe Schipani
  */
 package taskspider.spider.core;
+
 import java.net.MalformedURLException;
 import java.util.*;
 import com.google.soap.search.*;
@@ -14,10 +15,10 @@ import websphinx.*;
 
 public class RootsSites {
 	private GoogleSearchResult results;
-	private Vector<Link> sitesSource;
+	private Vector<String> sitesSource;
 	
 	public RootsSites(String searchKey){
-		sitesSource = new Vector<Link>();
+		sitesSource = new Vector<String>();
 		GoogleSearch gg = new GoogleSearch();
 		gg.setKey("Qte9k4VQFHKgauaxU4FdkjjJwazm3vrg");
 		
@@ -31,16 +32,13 @@ public class RootsSites {
 		
 	}
 	
-	public Vector<Link> getRoots(){
+	public Vector<String> getRoots(){
 		
 		GoogleSearchResultElement[] re = results.getResultElements();
 		
-		try {
-			for ( int i = 0; i < re.length; i++ ) {
-			 sitesSource.add(new Link(re[i].getURL()));
-			}
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
+		for ( int i = 0; i < (re.length>10 ? 10 : re.length); i++ ) {
+			sitesSource.add(re[i].getURL().toString());
+			// System.out.println("url: "+re[i].getURL());
 		}
 		
 		return this.sitesSource;
@@ -48,6 +46,9 @@ public class RootsSites {
 	
 	public static void main(String[] args){
 		RootsSites root = new RootsSites("coldplay");
-		System.out.println(root.getRoots().toString().replace(",", "\n"));
+		for(int i=0; i<10; i++) {
+			System.out.println("i: "+i+", elem: "+root.getRoots().get(i));
+		}
+		System.out.println(root.getRoots().toString());
 	}
 }

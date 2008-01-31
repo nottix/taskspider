@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
+	<classpathentry excluding="taskspider/view/gui/GraphMouseHandler.java" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/websphinx.jar" sourcepath="lib/src/websphinx">
 		<attributes>
@@ -20,5 +20,10 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/lobo-pub.jar"/>
 	<classpathentry kind="lib" path="lib/lobo.jar"/>
+	<classpathentry kind="lib" path="lib/junt/jung-api-2.0-alpha2.jar"/>
+	<classpathentry kind="lib" path="lib/junt/jung-algorithms-2.0-alpha2.jar"/>
+	<classpathentry kind="lib" path="lib/junt/jung-graph-impl-2.0-alpha2.jar"/>
+	<classpathentry kind="lib" path="lib/junt/jung-visualization-2.0-alpha2.jar"/>
+	<classpathentry kind="lib" path="lib/junt/collections-generic-4.01.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

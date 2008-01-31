@@ -17,7 +17,7 @@ import org.apache.lucene.store.LockObtainFailedException;
 
 import taskspider.util.properties.PropertiesReader;
 import taskspider.util.debug.*;
-import taskspider.controller.WebGraph;
+import taskspider.view.gui.TaskGraph;
 import taskspider.spider.core.*;
 
 public class Indexer {
@@ -30,7 +30,7 @@ public class Indexer {
 	private IndexWriter writer, writerTemp;
 	private String task;
 	private SpiderExplorer spiderExplorer;
-	private WebGraph graph;
+	private TaskGraph graph;
 	
 	public Indexer(String filename, SpiderExplorer spiderExplorer) {
 		try {
@@ -40,7 +40,7 @@ public class Indexer {
 			indexTempPath = PropertiesReader.getProperty("indexTempPath")+filename;
 			indexTempDir = FSDirectory.getDirectory(indexTempPath);
 			this.spiderExplorer = spiderExplorer;
-			graph = new WebGraph();
+			graph = new TaskGraph();
 			isearcher = null;
 			result = null;
 		} catch (IOException e) {
@@ -129,7 +129,7 @@ public class Indexer {
 		return 0;
 	}
 	
-	public WebGraph getWebGraph() {
+	public TaskGraph getWebGraph() {
 		return this.graph;
 	}
 	
