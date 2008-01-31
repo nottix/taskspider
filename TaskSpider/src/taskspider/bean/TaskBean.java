@@ -17,6 +17,7 @@ public class TaskBean{
 	private static Controller controller = null;
 	private static String task = "";
 	private static String query = "";
+	private static String qString = "";
 	private static int first = 0; 
 	private static int start, end, size;
 	
@@ -28,7 +29,7 @@ public class TaskBean{
 	 * taskspider e poi riempirmi due vettori.
 	 */
 	public static String doSearch(String taskSearch, String querySearch){
-		if(controller==null)
+		//if(controller==null)
 			controller = new Controller();
 		
 		if(taskSearch.equals(task) && querySearch.equals(query)) {
@@ -73,15 +74,16 @@ public class TaskBean{
 			hits = controller.getResult();
 			results = new Vector<Document>();
 			size = hits.length()/4;
-			
-			try {
-				for(int i=0; i<4; i++) {
-					results.add(hits.doc(i));
+			if(hits.length()>0) {
+				try {
+					for(int i=0; i<4 && i<hits.length(); i++) {
+						results.add(hits.doc(i));
+					}
+				} catch (CorruptIndexException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-			} catch (CorruptIndexException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
 		}
 		else {
@@ -119,6 +121,7 @@ public class TaskBean{
 	
 	public static String getArg(String name, String queryString) {
 		System.out.println("QUERYSTRING: "+queryString+", name: "+name);
+		qString = queryString;
 		
 		int start = queryString.indexOf(name)+name.length()+1;
 		if(start<0)
@@ -139,7 +142,7 @@ public class TaskBean{
 			if(index==i)
 				ret += "<a class=\"description\"> "+(i+1)+" </a>";
 			else
-				ret += "<a href=\"http://localhost:8180/taskspider/index.jsp?task="+task+"&query="+query+"&frame=1&index="+i+"&\" class=\"description\"> "+(i+1)+" </a>";
+				ret += "<a href=\"http://localhost:8180/taskspider/index.jsp?task="+task+"&query="+query+"&frame="+(getArg("frame", qString).equals("1") ? "1" : "0")+"&index="+i+"&\" class=\"description\"> "+(i+1)+" </a>";
 		}
 		return ret;
 	}

@@ -13,6 +13,7 @@ import java.awt.event.MouseWheelEvent;
 import java.net.MalformedURLException;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -42,9 +43,12 @@ import taskspider.controller.BrowserControl;
 import taskspider.controller.Controller;
 import taskspider.util.debug.Debug;
 import taskspider.util.properties.PropertiesReader;
+import edu.uci.ics.jung.visualization.control.*;
 import websphinx.Link;
 
 import org.apache.lucene.document.Document;
+
+import edu.uci.ics.jung.visualization.VisualizationViewer;
 
 /**
  * @author avenger
@@ -94,13 +98,13 @@ public class MainFrame extends JFrame {
 
 	private JButton cancelButton = null;
 
-	private JScrollPane graphScroll = null;
+	private JPanel graphScroll = null;
 	
-	private JGraph graph = null;  //  @jve:decl-index=0:
+	private VisualizationViewer<String,String> graph = null;  //  @jve:decl-index=0:
 	
 	private Controller controller = null;
 
-	private JButton jButton = null;
+	private JButton updateButton = null;
 
 	private JSlider zoomSlider = null;
 
@@ -513,7 +517,7 @@ public class MainFrame extends JFrame {
 	private JButton getSearchButton() {
 		if (searchButton == null) {
 			searchButton = new JButton();
-			searchButton.setText("Search");
+			searchButton.setText("Start & Search");
 			searchButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					if(!taskField.getText().equals("")) {
@@ -523,13 +527,12 @@ public class MainFrame extends JFrame {
 						controller.setTask(taskField.getText());
 						if(!rootsField.getText().equals("")) {
 							StringTokenizer tokens = new StringTokenizer(rootsField.getText().replaceAll(";", " "));
-							Vector<Link> links = new Vector<Link>();
-							try {
-								while(tokens.hasMoreTokens()) {
-									links.add(new Link(tokens.nextToken()));
-								}
-							} catch (MalformedURLException e1) {
-								e1.printStackTrace();
+							String temp;
+							Vector<String> links = new Vector<String>();
+							while(tokens.hasMoreTokens()) {
+								temp = tokens.nextToken();
+								Debug.println("LINK: "+temp, 1);
+								links.add(temp);
 							}
 							controller.setLinks(links);
 						}
@@ -575,7 +578,7 @@ public class MainFrame extends JFrame {
 	private JButton getCancelButton() {
 		if (cancelButton == null) {
 			cancelButton = new JButton();
-			cancelButton.setText("Cancel");
+			cancelButton.setText("Stop");
 			cancelButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					controller.stopProcess();
@@ -591,9 +594,28 @@ public class MainFrame extends JFrame {
 	 * 	
 	 * @return javax.swing.JScrollPane	
 	 */
-	private JScrollPane getGraphScroll() {
+	private JPanel getGraphScroll() {
 		if (graphScroll == null) { 
-			graphScroll = new JScrollPane();
+			graphScroll = new JPanel();
+			
+			graphScroll.setLayout(new GridBagLayout());
+			
+			
+			
+//			GridBagConstraints gridBagConstraints13 = new GridBagConstraints();
+//			gridBagConstraints13.weightx = 1.0;
+//			GridBagConstraints gridBagConstraints9 = new GridBagConstraints();
+//			gridBagConstraints9.weightx = 1.0;
+//			GridBagConstraints gridBagConstraints7 = new GridBagConstraints();
+//			gridBagConstraints7.gridx = -1;
+//			gridBagConstraints7.anchor = GridBagConstraints.CENTER;
+//			gridBagConstraints7.weightx = 1.0;
+//			gridBagConstraints7.gridy = -1;
+//			jPanel4 = new JPanel();
+//			jPanel4.setLayout(new GridBagLayout());
+//			jPanel4.add(getSearchButton(), gridBagConstraints7);
+//			jPanel4.add(getCancelButton(), gridBagConstraints9);
+//			jPanel4.add(getJButton(), gridBagConstraints13);
 		}
 		return graphScroll;
 	}
@@ -604,94 +626,123 @@ public class MainFrame extends JFrame {
 	 * @return javax.swing.JButton	
 	 */
 	private JButton getJButton() {
-		if (jButton == null) {
-			jButton = new JButton();
-			jButton.setText("Update");
-			jButton.addActionListener(new java.awt.event.ActionListener() {
+		if (updateButton == null) {
+			updateButton = new JButton();
+			updateButton.setText("Search");
+			updateButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					//getGraph();
-					controller.search(queryField.getText());
-					Vector<Document> docs = controller.getGroupResult();
-					for(int i=0; i<docs.size(); i++) {
-						if(docs.get(i)==null)
-							continue;
-						System.out.println("docs["+i+"]: "+docs.get(i).get("url"));
+					
+					//getGraph(); 
+
+					if(controller==null)
+						controller = new Controller();
+					if(browserCheck.isSelected()) {
+						try {
+							htmlPanel.navigate(controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0"));
+						} catch (MalformedURLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
 					}
+					else {
+						BrowserControl.displayURL("", controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0"));
+					}
+					
+//					controller.search(queryField.getText());
+//					Vector<Document> docs = controller.getGroupResult();
+//					for(int i=0; i<docs.size(); i++) {
+//						if(docs.get(i)==null)
+//							continue;
+//						System.out.println("docs["+i+"]: "+docs.get(i).get("url"));
+//					}
 				}
 			});
 		}
-		return jButton;
+		return updateButton;
 	}
 
-	private JGraph getGraph() {
+	private VisualizationViewer<String,String> getGraph() {
 		if(graph==null) {
 			if(graphScroll!=null && controller.getWebGraph()!=null) {
-				controller.setScale(((double)zoomSlider.getValue())/10);
-				graph = controller.getWebGraph().getGraph();
-				graphScroll.setViewportView(graph);
+//				controller.setScale(((double)zoomSlider.getValue())/10);
+				graph = controller.getWebGraph().getVisualization();
+				controller.getWebGraph().setBrowserCheck(browserCheck.isSelected());
+				controller.getWebGraph().setHtmlPanel(htmlPanel);
+				GraphZoomScrollPane scroll = new GraphZoomScrollPane(graph);
+//				graphScroll.setViewportView(graph);
+				
+				GridBagConstraints gridBagConstraints13 = new GridBagConstraints();
+				gridBagConstraints13.weightx = 1.0;
+				gridBagConstraints13.weighty = 1.0;
+				gridBagConstraints13.fill = GridBagConstraints.BOTH;
+				
+				graphScroll.add(scroll, gridBagConstraints13);
+				
+				//graphScroll.add(graph);
 				Debug.println("Graph updated", 1);
 			}
-			graph.addGraphSelectionListener(new GraphSelectionListener() {
-				public void valueChanged(GraphSelectionEvent e) {
-
-				}
-			});
+//			graph.addGraphSelectionListener(new GraphSelectionListener() {
+//				public void valueChanged(GraphSelectionEvent e) {
+//
+//				}
+//			});
 			
-			graph.addMouseListener(new java.awt.event.MouseListener() {
-				public void mouseClicked(MouseEvent e) {
-					if(e.getClickCount()==2) {
-						DefaultGraphCell cell = (DefaultGraphCell)graph.getSelectionCellAt(e.getPoint());
-						if(cell!=null) {
-							Debug.println("Selected cell is: "+(selectedCell=cell.toString()),1);
-							if(browserCheck.isSelected()) {
-								try {
-									htmlPanel.navigate(selectedCell);
-								} catch (MalformedURLException e1) {
-									e1.printStackTrace();
-								}
-							}
-							else
-								BrowserControl.displayURL("", selectedCell);
-						}
-						else
-							selectedCell = "";
-						
-					}
-			    }
-				
-			    public void mousePressed(MouseEvent e) {   
-			    }
-			    
-			    public void mouseReleased(MouseEvent e) {
-			    }
-			    
-			    public void mouseEntered(MouseEvent e) {  
-			    }
-			    
-			    public void mouseExited(MouseEvent e) {  
-			    }
-			});
-			
-			graph.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
-				public void mouseWheelMoved(MouseWheelEvent e) {
-					Debug.println("Wheel: "+e.getWheelRotation()+", SCALE: "+graph.getScale(), 1);
-					if(e.getWheelRotation()<0) {
-						graph.setScale(graph.getScale()+0.1);
-						zoomSlider.setValue((int)(graph.getScale()*10));
-					}
-					else {
-						graph.setScale(graph.getScale()-0.1);
-						zoomSlider.setValue((int)(graph.getScale()*10));
-					}
-					graphScroll.setViewportView(graph);
-					
-				}
-			});
+//			graph.addMouseListener(new java.awt.event.MouseListener() {
+//				public void mouseClicked(MouseEvent e) {
+//					if(e.getClickCount()==2) {
+//						DefaultGraphCell cell = (DefaultGraphCell)graph.getSelectionCellAt(e.getPoint());
+//						if(cell!=null) {
+//							Debug.println("Selected cell is: "+(selectedCell=cell.toString()),1);
+//							if(browserCheck.isSelected()) {
+//								try {
+//									htmlPanel.navigate(selectedCell);
+//								} catch (MalformedURLException e1) {
+//									e1.printStackTrace();
+//								}
+//							}
+//							else
+//								BrowserControl.displayURL("", selectedCell);
+//						}
+//						else
+//							selectedCell = "";
+//						
+//					}
+//			    }
+//				
+//			    public void mousePressed(MouseEvent e) {   
+//			    }
+//			    
+//			    public void mouseReleased(MouseEvent e) {
+//			    }
+//			    
+//			    public void mouseEntered(MouseEvent e) {  
+//			    }
+//			    
+//			    public void mouseExited(MouseEvent e) {  
+//			    }
+//			});
+//			
+//			graph.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
+//				public void mouseWheelMoved(MouseWheelEvent e) {
+//					Debug.println("Wheel: "+e.getWheelRotation()+", SCALE: "+graph.getScale(), 1);
+//					if(e.getWheelRotation()<0) {
+//						graph.setScale(graph.getScale()+0.1);
+//						zoomSlider.setValue((int)(graph.getScale()*10));
+//					}
+//					else {
+//						graph.setScale(graph.getScale()-0.1);
+//						zoomSlider.setValue((int)(graph.getScale()*10));
+//					}
+//					graphScroll.setViewportView(graph);
+//					
+//				}
+//			});
 
 		}
 		else {
-			controller.setScale(((double)zoomSlider.getValue())/10);
-			graphScroll.setViewportView(graph);
+//			controller.setScale(((double)zoomSlider.getValue())/10);
+//			graphScroll.setViewportView(graph);
 			Debug.println("Graph updated", 1);
 		}
 		return graph;
@@ -705,12 +756,14 @@ public class MainFrame extends JFrame {
 	private JSlider getZoomSlider() {
 		if (zoomSlider == null) {
 			zoomSlider = new JSlider();
-			zoomSlider.setMinimum(0);
-			zoomSlider.setMaximum(10);
-			zoomSlider.setValue(5);
+			zoomSlider.setMinimum(1);
+			zoomSlider.setMaximum(20);
+			zoomSlider.setValue(10);
 			zoomSlider.addChangeListener(new javax.swing.event.ChangeListener() {
 				public void stateChanged(javax.swing.event.ChangeEvent e) {
-					getGraph();
+					ScalingControl scaler = new CrossoverScalingControl();
+					if(graph!=null)//TODO
+						scaler.scale(graph, (float)0.1*zoomSlider.getValue(), graph.getCenter());
 				}
 			});
 		}
