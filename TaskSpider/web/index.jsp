@@ -6,12 +6,12 @@
 
 <%
 String query;
-if((query=request.getQueryString())!=null) {
-	TaskBean.doSearch( TaskBean.getArg("task", query), TaskBean.getArg("query", query) );
+if((query=request.getQueryString())!=null && TaskBean.getArg("index", request.getQueryString()).equals("0") && TaskBean.getArg("do", request.getQueryString())!=null) {
+	TaskBean.doSearch( TaskBean.getArg("task", query), TaskBean.getArg("query", query), TaskBean.getArg("do", request.getQueryString()).equals("1") ? true : false );
 	Thread.sleep(1000);
 }
 else if(request.getParameter("Submit")!=null) {
-	out.println(TaskBean.doSearch(request.getParameter("taskString"), request.getParameter("query")));
+	out.println(TaskBean.doSearch(request.getParameter("taskString"), request.getParameter("query"), true));
 }
 %>
 
@@ -145,7 +145,7 @@ else if(request.getParameter("Submit")!=null) {
   </tr>
 
 </table>
-
+<div align="center" class="field">Number of matched: <%=TaskBean.getTotal()%></div>
 <div align="center" class="footer">TaskSpider - MGRI 2007/2008 - Notargiacomo Simone & Schipani Giuseppe </div>
 </body>
 </html>
