@@ -31,6 +31,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
+import javax.swing.JScrollBar;
 
 import org.jgraph.JGraph;
 import org.jgraph.event.GraphSelectionEvent;
@@ -678,6 +679,12 @@ public class MainFrame extends JFrame {
 				gridBagConstraints13.fill = GridBagConstraints.BOTH;
 				
 				graphScroll.add(scroll, gridBagConstraints13);
+//				JScrollBar bar = scroll.getHorizontalScrollBar();
+//				System.out.println("VALUE1: "+bar.getValue());
+//				bar.setValue(bar.getValue()/2);
+//				System.out.println("VALUE2: "+bar.getValue());
+//				bar = scroll.getVerticalScrollBar();
+//				bar.setValue(bar.getValue()/2);
 				
 				//graphScroll.add(graph);
 				Debug.println("Graph updated", 1);

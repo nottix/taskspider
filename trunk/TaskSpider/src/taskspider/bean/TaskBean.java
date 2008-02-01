@@ -18,27 +18,32 @@ public class TaskBean{
 	private static String task = "";
 	private static String query = "";
 	private static String qString = "";
-	private static int first = 0; 
+	//private static int first = 0; 
 	private static int start, end, size;
+	private static int total = 0;
 	
 	//costruttore,  inutile ma serve a tomcat, altrimenti crea errore
 	public TaskBean(){}
+	
+	public static int getTotal() {
+		return total;
+	}
 	
 	/*
 	 * Do in input i parametri task e query, Qui dovresti fare l'operazione de
 	 * taskspider e poi riempirmi due vettori.
 	 */
-	public static String doSearch(String taskSearch, String querySearch){
-		//if(controller==null)
+	public static String doSearch(String taskSearch, String querySearch, boolean redo){
+		if(controller==null)
 			controller = new Controller();
-		
-		if(taskSearch.equals(task) && querySearch.equals(query)) {
-			first++;
-			return "0";
+//		
+		if(taskSearch.equals(task) && querySearch.equals(query) && !redo) {
+			return String.valueOf(total);
 		}
-		first = 0;
+		//first = 0;
 		int ret;
 		if((ret=controller.search(taskSearch, querySearch))>0) {
+			total = ret;
 			task = taskSearch;
 			query = querySearch;
 			try {
@@ -70,10 +75,10 @@ public class TaskBean{
 		int index = Integer.parseInt(indexString);
 		if(controller==null)
 			return new Vector<Document>();
-		if(first==0) {
+		if(index==0) {
 			hits = controller.getResult();
 			results = new Vector<Document>();
-			size = hits.length()/4;
+			size = (hits.length()/4)+((hits.length()%4)>0 ? 1 : 0);
 			if(hits.length()>0) {
 				try {
 					for(int i=0; i<4 && i<hits.length(); i++) {
@@ -89,18 +94,19 @@ public class TaskBean{
 		else {
 			start = index*4;
 			end = start+4;
-			if(end<=hits.length()) {
+			//if(end<=hits.length()) {
 				results = new Vector<Document>();
 				try {
-					for(int i=start; i<end; i++) {
-						results.add(hits.doc(i));
+					for(int i=start; i<end && i<hits.length(); i++) {
+						if(hits.doc(i)!=null)
+							results.add(hits.doc(i));
 					}
 				} catch (CorruptIndexException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-			}
+			//}
 		}
 		
 		return results;
