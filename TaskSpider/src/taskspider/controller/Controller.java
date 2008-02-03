@@ -57,7 +57,7 @@ public class Controller extends Thread{
 	public String getQueryString(String task, String query, String frame) {
 		task = task.replaceAll(" ", "%20");
 		query = query.replaceAll(" ", "%20");
-		return this.jspUrl+"?task="+task+"&query="+query+"&frame="+frame+"&index=0&";
+		return this.jspUrl+"?task="+task+"&query="+query+"&frame="+frame+"&index=0&do=1&";
 	}
 	
 	public void setMessage(JLabel message) {
@@ -78,7 +78,7 @@ public class Controller extends Thread{
 	}		
 	
 	public int search(String task, String query) {
-		if(searcher==null)
+//		if(searcher==null)
 			searcher = new TermSearcher(task);
 		return searcher.search(query);
 	}

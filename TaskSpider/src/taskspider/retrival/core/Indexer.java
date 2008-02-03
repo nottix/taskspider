@@ -63,15 +63,21 @@ public class Indexer {
 	
 	private Query genQuery(String taskString) {
 		BooleanQuery booleanQuery = new BooleanQuery();
-		WildcardQuery queryUrl = new WildcardQuery(new Term("url", "*"+taskString+"*"));
-		booleanQuery.add(queryUrl, BooleanClause.Occur.SHOULD);
-		WildcardQuery queryTitle = new WildcardQuery(new Term("title", "*"+taskString+"*"));
-		booleanQuery.add(queryTitle, BooleanClause.Occur.SHOULD);
-		WildcardQuery queryKeywords = new WildcardQuery(new Term("keywords", "*"+taskString+"*"));
-		booleanQuery.add(queryKeywords, BooleanClause.Occur.SHOULD);
 		
-		WildcardQuery queryBody = new WildcardQuery(new Term("body", "*"+taskString+"*"));
-		booleanQuery.add(queryBody, BooleanClause.Occur.SHOULD);
+		StringTokenizer tokens = new StringTokenizer(taskString);
+		String task = "";
+		while(tokens.hasMoreTokens()) {
+			task = tokens.nextToken();
+			WildcardQuery queryUrl = new WildcardQuery(new Term("url", "*"+task+"*"));
+			booleanQuery.add(queryUrl, BooleanClause.Occur.SHOULD);
+			WildcardQuery queryTitle = new WildcardQuery(new Term("title", "*"+task+"*"));
+			booleanQuery.add(queryTitle, BooleanClause.Occur.SHOULD);
+			WildcardQuery queryKeywords = new WildcardQuery(new Term("keywords", "*"+task+"*"));
+			booleanQuery.add(queryKeywords, BooleanClause.Occur.SHOULD);
+			
+			WildcardQuery queryBody = new WildcardQuery(new Term("body", "*"+task+"*"));
+			booleanQuery.add(queryBody, BooleanClause.Occur.SHOULD);
+		}
 		
 //		WildcardQuery booleanQuery = new WildcardQuery(new Term("url", "*"+taskString+"*"));
 		
@@ -81,13 +87,17 @@ public class Indexer {
 	private int search(String queryString, String field) {
 		try {
 			isearcher = new IndexSearcher(indexTempDir);
+			
+//			StandardAnalyzer analyzer = new StandardAnalyzer();
+//			QueryParser parser = new QueryParser("body", analyzer);
+//			Query query = parser.parse(queryString);
+			
 			result = isearcher.search(genQuery(queryString));
+			Debug.println("Query: "+queryString+", Expanded: "+genQuery(queryString).toString(), 1);
 			Debug.println("Hits: "+result.length(), 1);
 			
 			return result.length();
-		} catch (CorruptIndexException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return 0;

@@ -65,7 +65,7 @@ public class TaskGraph {
     
     /** Creates a new instance of SimpleGraphView */
     public TaskGraph() {
-    	g = new DirectedSparseGraph<String, String>();
+    	g = new DirectedSparseMultigraph<String, String>();
     	counter = 0;
     	
     	vertexPaint = new Transformer<String,Paint>() {
@@ -135,14 +135,18 @@ public class TaskGraph {
     	if(source.indexOf("?")<0 && target.indexOf("?")<0 &&
 				source.indexOf(".js")<0 && target.indexOf(".js")<0) { 
     		counter++;
+    		g.addVertex(source);
+    		//g.addVertex(target);
     		g.addEdge(source+target, source, target);
     	}
     	return 0;
     }
 
     public TaskGraph getTaskGraph() {
-    	layout = new ISOMLayout((DirectedSparseGraph<String, String>)g);
-    	layout.setSize(new Dimension(counter*30,counter*30)); // sets the initial size of the layout space
+//    	layout = new ISOMLayout((DirectedSparseGraph<String, String>)g);
+    	layout = new FRLayout2((DirectedSparseMultigraph<String, String>)g);
+    	//((KKLayout)layout).setAttractionMultiplier(2);
+    	layout.setSize(new Dimension(counter*100,counter*100)); // sets the initial size of the layout space
     	vv = new VisualizationViewer<String,String>(layout);
     	vv.setPreferredSize(new Dimension(450,450)); //Sets the viewing area size
     	
