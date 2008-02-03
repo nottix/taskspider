@@ -50,6 +50,7 @@ import websphinx.Link;
 import org.apache.lucene.document.Document;
 
 import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.algorithms.layout.*;
 
 /**
  * @author avenger
@@ -638,6 +639,7 @@ public class MainFrame extends JFrame {
 
 					if(controller==null)
 						controller = new Controller();
+					System.out.println("RESULT: "+controller.search(queryField.getText()));
 					if(browserCheck.isSelected()) {
 						try {
 							htmlPanel.navigate(controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0"));
@@ -678,7 +680,9 @@ public class MainFrame extends JFrame {
 				gridBagConstraints13.weighty = 1.0;
 				gridBagConstraints13.fill = GridBagConstraints.BOTH;
 				
+				graphScroll.removeAll();
 				graphScroll.add(scroll, gridBagConstraints13);
+				
 //				JScrollBar bar = scroll.getHorizontalScrollBar();
 //				System.out.println("VALUE1: "+bar.getValue());
 //				bar.setValue(bar.getValue()/2);
@@ -786,6 +790,11 @@ public class MainFrame extends JFrame {
 		if (browserCheck == null) {
 			browserCheck = new JCheckBox();
 			browserCheck.setText("Embedded browser");
+			browserCheck.addActionListener(new java.awt.event.ActionListener() {
+				public void actionPerformed(java.awt.event.ActionEvent e) {
+					controller.getWebGraph().setBrowserCheck(browserCheck.isSelected());
+				}
+			});
 		}
 		return browserCheck;
 	}

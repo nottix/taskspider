@@ -34,26 +34,33 @@ public class TaskBean{
 	 * taskspider e poi riempirmi due vettori.
 	 */
 	public static String doSearch(String taskSearch, String querySearch, boolean redo){
-		if(controller==null)
-			controller = new Controller();
+//		if(controller==null)
+//			controller = new Controller();
 //		
-		if(taskSearch.equals(task) && querySearch.equals(query) && !redo) {
-			return String.valueOf(total);
-		}
+//		if(taskSearch.equals(task) && querySearch.equals(query) && !redo) {
+//			return String.valueOf(total);
+//		}
 		//first = 0;
 		int ret;
-		if((ret=controller.search(taskSearch, querySearch))>0) {
-			total = ret;
-			task = taskSearch;
-			query = querySearch;
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		if(redo) {
+			controller = new Controller();
+			if(taskSearch.indexOf("%20")>0)
+				taskSearch = taskSearch.replaceAll("%20", " ");
+			if((ret=controller.search(taskSearch, querySearch))>0) {
+				total = ret;
+				if(taskSearch.indexOf(" ")>0)
+					taskSearch = taskSearch.replaceAll(" ", "%20");
+				task = taskSearch;
+				query = querySearch;
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				return String.valueOf(ret);
+				//return "1";
 			}
-			return String.valueOf(ret);
-			//return "1";
 		}
 		return "0";
 		
@@ -78,8 +85,8 @@ public class TaskBean{
 		if(index==0) {
 			hits = controller.getResult();
 			results = new Vector<Document>();
-			size = (hits.length()/4)+((hits.length()%4)>0 ? 1 : 0);
-			if(hits.length()>0) {
+			if(hits!=null && hits.length()>0) {
+				size = (hits.length()/4)+((hits.length()%4)>0 ? 1 : 0);
 				try {
 					for(int i=0; i<4 && i<hits.length(); i++) {
 						results.add(hits.doc(i));
@@ -90,6 +97,8 @@ public class TaskBean{
 					e.printStackTrace();
 				}
 			}
+			else
+				size = 0;
 		}
 		else {
 			start = index*4;
@@ -117,7 +126,7 @@ public class TaskBean{
 	 * perch non riesco ad avere il sitema funzionante sul server tomcat
 	 */
 	public static Vector<Document> getTree(){
-		if(controller==null) {
+		if(controller==null || total==0) {
 			Vector<Document> docs = new Vector<Document>();
 			docs.add(new Document());
 			return docs;
@@ -147,8 +156,9 @@ public class TaskBean{
 		for(int i=0; i<size; i++) {
 			if(index==i)
 				ret += "<a class=\"description\"> "+(i+1)+" </a>";
-			else
+			else {
 				ret += "<a href=\"http://localhost:8180/taskspider/index.jsp?task="+task+"&query="+query+"&frame="+(getArg("frame", qString).equals("1") ? "1" : "0")+"&index="+i+"&\" class=\"description\"> "+(i+1)+" </a>";
+			}
 		}
 		return ret;
 	}
