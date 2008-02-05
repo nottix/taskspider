@@ -21,9 +21,10 @@
 	<classpathentry kind="lib" path="lib/lobo-pub.jar"/>
 	<classpathentry kind="lib" path="lib/lobo.jar"/>
 	<classpathentry kind="lib" path="lib/junt/jung-api-2.0-alpha2.jar"/>
-	<classpathentry kind="lib" path="lib/junt/jung-algorithms-2.0-alpha2.jar"/>
-	<classpathentry kind="lib" path="lib/junt/jung-graph-impl-2.0-alpha2.jar"/>
-	<classpathentry kind="lib" path="lib/junt/jung-visualization-2.0-alpha2.jar"/>
+	<classpathentry kind="lib" path="lib/junt/jung-algorithms-2.0-alpha2.jar" sourcepath="lib/src/jung/jung-algorithms-2.0-alpha2.jar"/>
+	<classpathentry kind="lib" path="lib/junt/jung-graph-impl-2.0-alpha2.jar" sourcepath="lib/src/jung/jung-graph-impl-2.0-alpha2.jar"/>
+	<classpathentry kind="lib" path="lib/junt/jung-visualization-2.0-alpha2.jar" sourcepath="lib/src/jung/jung-visualization-2.0-alpha2.jar"/>
 	<classpathentry kind="lib" path="lib/junt/collections-generic-4.01.jar"/>
+	<classpathentry kind="lib" path="lib/junt/jung-samples-2.0-alpha2.jar" sourcepath="lib/src/jung/jung-samples-2.0-alpha2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
