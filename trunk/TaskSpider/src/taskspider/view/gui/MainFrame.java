@@ -10,6 +10,8 @@ import java.awt.Insets;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.color.*;
+import java.awt.Color;
 import java.net.MalformedURLException;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -51,6 +53,7 @@ import org.apache.lucene.document.Document;
 
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.algorithms.layout.*;
+import edu.uci.ics.jung.algorithms.layout.util.Relaxer;
 
 /**
  * @author avenger
@@ -635,7 +638,18 @@ public class MainFrame extends JFrame {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
 					//getGraph();
 					
-					//getGraph(); 
+//					graph = null;
+//					getGraph();
+					
+//					Layout<String, String> layout = graph.getGraphLayout();
+//					layout.initialize();
+//					Relaxer relaxer = graph.getModel().getRelaxer();
+//					if(relaxer != null) {
+////					if(layout instanceof IterativeContext) {
+//						relaxer.stop();
+//						relaxer.prerelax();
+//						relaxer.relax();
+//					}
 
 					if(controller==null)
 						controller = new Controller();
@@ -682,13 +696,14 @@ public class MainFrame extends JFrame {
 				
 				graphScroll.removeAll();
 				graphScroll.add(scroll, gridBagConstraints13);
+				graph.setBackground(Color.white);
 				
-//				JScrollBar bar = scroll.getHorizontalScrollBar();
-//				System.out.println("VALUE1: "+bar.getValue());
-//				bar.setValue(bar.getValue()/2);
-//				System.out.println("VALUE2: "+bar.getValue());
-//				bar = scroll.getVerticalScrollBar();
-//				bar.setValue(bar.getValue()/2);
+				JScrollBar bar = scroll.getHorizontalScrollBar();
+				System.out.println("VALUE1: "+bar.getMaximum());
+				bar.setValue(bar.getMaximum()/2);
+				System.out.println("VALUE2: "+bar.getMinimum());
+				bar = scroll.getVerticalScrollBar();
+				bar.setValue(bar.getMaximum()/2);
 				
 				//graphScroll.add(graph);
 				Debug.println("Graph updated", 1);

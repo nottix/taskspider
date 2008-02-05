@@ -18,6 +18,7 @@ import java.awt.Dimension;
 import javax.swing.JFrame;
 import java.awt.event.*;
 import java.awt.geom.*;
+import edu.uci.ics.jung.algorithms.importance.*;
 
 import org.apache.commons.collections15.Transformer;
 import org.lobobrowser.gui.BrowserPanel;
@@ -32,6 +33,7 @@ import edu.uci.ics.jung.visualization.control.*;
 import edu.uci.ics.jung.visualization.*;
 import edu.uci.ics.jung.algorithms.layout.GraphElementAccessor;
 import edu.uci.ics.jung.algorithms.layout.Layout;
+import edu.uci.ics.jung.algorithms.layout.util.Relaxer;
 import edu.uci.ics.jung.visualization.Layer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.VisualizationServer.Paintable;
@@ -54,6 +56,7 @@ public class TaskGraph {
     private DefaultModalGraphMouse gm;
     private boolean browserCheck = true;
     private BrowserPanel htmlPanel = null;
+    private int oldNum = 0;
     
     public void setBrowserCheck(boolean browserCheck) {
     	this.browserCheck = browserCheck;
@@ -67,6 +70,7 @@ public class TaskGraph {
     public TaskGraph() {
     	g = new DirectedSparseMultigraph<String, String>();
     	counter = 0;
+    	oldNum = 0;
     	
     	vertexPaint = new Transformer<String,Paint>() {
             public Paint transform(String i) {
@@ -76,7 +80,8 @@ public class TaskGraph {
         
         vertexShape = new Transformer<String,Shape>() {
             public Shape transform(String i) {
-                return new Rectangle(i.length()*15, 40);
+//                return new Rectangle(i.length()*15, 40);
+            	return new Rectangle(40, 40);
             }
         };
         
@@ -133,9 +138,10 @@ public class TaskGraph {
     		return -1;
     	Debug.println("SOURCE: "+source+", TARGET: "+target, 3);
     	if(source.indexOf("?")<0 && target.indexOf("?")<0 &&
-				source.indexOf(".js")<0 && target.indexOf(".js")<0) { 
+				source.indexOf(".js")<0 && target.indexOf(".js")<0/* &&
+				!g.containsVertex(target)*/) { 
     		counter++;
-    		g.addVertex(source);
+//    		g.addVertex(source);
     		//g.addVertex(target);
     		g.addEdge(source+target, source, target);
     	}
@@ -144,22 +150,48 @@ public class TaskGraph {
 
     public TaskGraph getTaskGraph() {
 //    	layout = new ISOMLayout((DirectedSparseGraph<String, String>)g);
-    	layout = new FRLayout2((DirectedSparseMultigraph<String, String>)g);
-    	//((KKLayout)layout).setAttractionMultiplier(2);
-    	layout.setSize(new Dimension(counter*100,counter*100)); // sets the initial size of the layout space
+//    	layout = new FRLayout2((DirectedSparseMultigraph<String, String>)g);
+    	layout = new FRLayout((DirectedSparseMultigraph<String, String>)g);
+    	((FRLayout)layout).setAttractionMultiplier(0.2);
+    	((FRLayout)layout).setRepulsionMultiplier(0.4);
+    	((FRLayout)layout).setMaxIterations(750);
+    	layout.setSize(new Dimension(counter*600,counter*600)); // sets the initial size of the layout space
     	vv = new VisualizationViewer<String,String>(layout);
     	vv.setPreferredSize(new Dimension(450,450)); //Sets the viewing area size
     	
         vv.getRenderContext().setVertexFillPaintTransformer(vertexPaint);
         vv.getRenderContext().setVertexShapeTransformer(vertexShape);
-//        vv.getRenderContext().setEdgeStrokeTransformer(edgeStrokeTransformer);
-        vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
-        vv.getRenderContext().setVertexFontTransformer(vertexFont);
-//        vv.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
+
+//        vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
+//        vv.getRenderContext().setVertexFontTransformer(vertexFont);
+
         vv.getRenderer().getVertexLabelRenderer().setPosition(Position.CNTR);
 
-        this.setScale(0.5);
+//        this.setScale(0.5);
         vv.setGraphMouse(gm);
+        vv.addChangeListener(new javax.swing.event.ChangeListener() {
+			public void stateChanged(javax.swing.event.ChangeEvent e) {
+				
+				//System.out.println("COUNTER: "+counter+", OLDNUM: "+oldNum);
+				if((counter>oldNum) && ((FRLayout)layout).done()) {
+					layout.initialize();
+					Relaxer relaxer = vv.getModel().getRelaxer();
+					if(relaxer != null) {
+						relaxer.stop();
+						relaxer.prerelax();
+						relaxer.relax();
+					}
+					oldNum = counter;
+				}
+//				Relaxer relaxer = vv.getModel().getRelaxer();
+//				if(relaxer != null) {
+////				if(layout instanceof IterativeContext) {
+//					relaxer.stop();
+//					relaxer.prerelax();
+//					relaxer.relax();
+//				}
+			}
+        });
     	
     	return this;
     }
@@ -190,19 +222,42 @@ public class TaskGraph {
 			control.scale(vv, (float)value, vv.getCenter());
 		}
 	}
+	
+	public Graph<String, String> getGraph() {
+		return this.g;
+	}
     
     public static void main(String[] args) {
         TaskGraph sgv = new TaskGraph(); //We create our graph in here
        
-        for(int i=0; i<100; i++) {
-        	sgv.addNode("aaaaaaaaaaaaaaa"+i, "bbbbbbbbbbbbbbbbbbb"+i);
+//        for(int i=1; i<100; i++) {
+//        	String source = "aaaaaaaaaaaaaaa"+((int)((Math.random()+1)*100))%i;
+//        	String target = "bbbbbbbbbbbbbbbbbbb"+((int)((Math.random()+1)*100))%i;
+//        	sgv.addNode(source, target);
+//        	System.out.println("SOURCE: "+source+", TARGET: "+target);
+////        	System.out.println("aaaaaaaaaaaaaaa"+i+": "+sgv.getGraph().inDegree("aaaaaaaaaaaaaaa"+i));
+//        }
+        
+        for(int i=90; i<150; i++) {
+        	sgv.addNode("aaa3", "bbb"+i);
+        }
+        for(int i=0; i<50; i++) {
+        	sgv.addNode("aaa1", "bbb"+i);
+        }
+        for(int i=50; i<100; i++) {
+        	sgv.addNode("aaa2", "bbb"+i);
+        }
+        
+        for(int i=140; i<250; i++) {
+        	sgv.addNode("aaa4", "bbb"+i);
         }
         
         JFrame frame = new JFrame("Simple Graph View");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().add(sgv.getTaskGraph().getVisualization()); 
         frame.pack();
-        frame.setVisible(true);       
+        frame.setVisible(true);   
+       
     }
     
     private static class GraphMouseHandler extends PickingGraphMousePlugin<String, String> {

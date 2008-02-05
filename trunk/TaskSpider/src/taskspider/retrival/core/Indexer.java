@@ -64,24 +64,90 @@ public class Indexer {
 	private Query genQuery(String taskString) {
 		BooleanQuery booleanQuery = new BooleanQuery();
 		
+//		StringTokenizer tokens = new StringTokenizer(taskString);
+//		String task = "";
+//		while(tokens.hasMoreTokens()) {
+//			task = tokens.nextToken();
+//			WildcardQuery queryUrl = new WildcardQuery(new Term("url", "*"+task+"*"));
+//			booleanQuery.add(queryUrl, BooleanClause.Occur.SHOULD);
+//			WildcardQuery queryTitle = new WildcardQuery(new Term("title", "*"+task+"*"));
+//			booleanQuery.add(queryTitle, BooleanClause.Occur.SHOULD);
+//			WildcardQuery queryKeywords = new WildcardQuery(new Term("keywords", "*"+task+"*"));
+//			booleanQuery.add(queryKeywords, BooleanClause.Occur.SHOULD);
+//			
+//			WildcardQuery queryBody = new WildcardQuery(new Term("body", "*"+task+"*"));
+//			booleanQuery.add(queryBody, BooleanClause.Occur.SHOULD);
+//		}
+		
+		String query = "";
+		
 		StringTokenizer tokens = new StringTokenizer(taskString);
 		String task = "";
+		query += "(";
 		while(tokens.hasMoreTokens()) {
 			task = tokens.nextToken();
-			WildcardQuery queryUrl = new WildcardQuery(new Term("url", "*"+task+"*"));
-			booleanQuery.add(queryUrl, BooleanClause.Occur.SHOULD);
-			WildcardQuery queryTitle = new WildcardQuery(new Term("title", "*"+task+"*"));
-			booleanQuery.add(queryTitle, BooleanClause.Occur.SHOULD);
-			WildcardQuery queryKeywords = new WildcardQuery(new Term("keywords", "*"+task+"*"));
-			booleanQuery.add(queryKeywords, BooleanClause.Occur.SHOULD);
+			query += "url:"+task;
+			if(tokens.hasMoreTokens())
+				query += " AND ";
 			
-			WildcardQuery queryBody = new WildcardQuery(new Term("body", "*"+task+"*"));
-			booleanQuery.add(queryBody, BooleanClause.Occur.SHOULD);
+//			WildcardQuery queryUrl = new WildcardQuery(new Term("url", "*"+task+"*"));
+//			booleanQuery.add(queryUrl, BooleanClause.Occur.SHOULD);
+		}
+		query += ") OR ";
+		
+		tokens = new StringTokenizer(taskString);
+		task = "";
+		query += "(";
+		while(tokens.hasMoreTokens()) {
+			task = tokens.nextToken();
+			query += "title:"+task;
+			if(tokens.hasMoreTokens())
+				query += " AND ";
+			
+//			WildcardQuery queryTitle = new WildcardQuery(new Term("title", "*"+task+"*"));
+//			booleanQuery.add(queryTitle, BooleanClause.Occur.SHOULD);
+		}
+		query += ") OR ";
+		
+		tokens = new StringTokenizer(taskString);
+		task = "";
+		query += "(";
+		while(tokens.hasMoreTokens()) {
+			task = tokens.nextToken();
+			query += "keywords:"+task;
+			if(tokens.hasMoreTokens())
+				query += " AND ";
+			
+//			WildcardQuery queryKeywords = new WildcardQuery(new Term("keywords", "*"+task+"*"));
+//			booleanQuery.add(queryKeywords, BooleanClause.Occur.SHOULD);
+		}
+		query += ") OR ";
+			
+		tokens = new StringTokenizer(taskString);
+		task = "";
+		query += "(";
+		while(tokens.hasMoreTokens()) {
+			task = tokens.nextToken();
+			query += "body:"+task;
+			if(tokens.hasMoreTokens())
+				query += " AND ";
+			
+//			WildcardQuery queryBody = new WildcardQuery(new Term("body", "*"+task+"*"));
+//			booleanQuery.add(queryBody, BooleanClause.Occur.SHOULD);
+		}
+		query += ")";
+		
+		QueryParser parser = new QueryParser("body", new StandardAnalyzer());
+		Query ret = null;
+		try {
+			ret = parser.parse(query);
+		} catch (ParseException e) {
+			e.printStackTrace();
 		}
 		
 //		WildcardQuery booleanQuery = new WildcardQuery(new Term("url", "*"+taskString+"*"));
 		
-		return booleanQuery;
+		return ret;
 	}
 	
 	private int search(String queryString, String field) {
