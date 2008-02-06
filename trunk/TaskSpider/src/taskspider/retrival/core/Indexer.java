@@ -86,7 +86,7 @@ public class Indexer {
 		query += "(";
 		while(tokens.hasMoreTokens()) {
 			task = tokens.nextToken();
-			query += "url:"+task;
+			query += "url:"+task+"*";
 			if(tokens.hasMoreTokens())
 				query += " AND ";
 			
@@ -100,7 +100,7 @@ public class Indexer {
 		query += "(";
 		while(tokens.hasMoreTokens()) {
 			task = tokens.nextToken();
-			query += "title:"+task;
+			query += "title:"+task+"*";
 			if(tokens.hasMoreTokens())
 				query += " AND ";
 			
