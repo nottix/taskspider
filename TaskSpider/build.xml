@@ -8,6 +8,7 @@
 	<property name="buildweb" value="./web"/>
 	<property name="tomcat" value="/var/lib/tomcat5.5"/>
 	<property name="ejblib" value="/usr/share/tomcat5.5/common/lib"/>
+	<property name="instdir" value="/home/avenger/Programs/taskspider"/>
 
 	<path id="compile.classpath">
 		<pathelement path="${buildweb}" />
@@ -32,21 +33,9 @@
 
 	<target name="Deploy">
 		<delete file="./${name}.war"/>
-		<mkdir dir="${buildweb}/WEB-INF/conf"/>
-		<copy preservelastmodified="true" todir="${buildweb}/WEB-INF/conf">
-	          <fileset dir="./conf">
-	              <include name="*.*" />
-	          </fileset>
-		</copy>
 		<mkdir dir="${buildweb}/WEB-INF/lib"/>
 		<copy preservelastmodified="true" todir="${buildweb}/WEB-INF/lib">
 	          <fileset dir="./lib">
-	              <include name="*.*" />
-	          </fileset>
-		</copy>
-		<mkdir dir="${buildweb}/WEB-INF/wordnet"/>
-		<copy preservelastmodified="true" todir="${buildweb}/WEB-INF/wordnet">
-	          <fileset dir="./wordnet">
 	              <include name="*.*" />
 	          </fileset>
 		</copy>
@@ -64,6 +53,18 @@
 	</target>
 	
 	<target name="Install">
-		<mkdir dir="/tmp/taskspider"/>	
+		<mkdir dir="${instdir}"/>
+		<mkdir dir="${instdir}/wordnet"/>
+		<copy preservelastmodified="true" todir="${instdir}/wordnet">
+			<fileset dir="./wordnet">
+				<include name="*.*" />
+	 		</fileset>
+		</copy>
+		<mkdir dir="${instdir}/conf"/>
+		<copy preservelastmodified="true" todir="${instdir}//conf">
+			<fileset dir="./conf">
+		    	<include name="*.*" />
+		    </fileset>
+		</copy>
 	</target>
 </project>

@@ -14,6 +14,8 @@ import edu.uci.ics.jung.visualization.BasicVisualizationServer;
 import edu.uci.ics.jung.visualization.control.LayoutScalingControl;
 import edu.uci.ics.jung.visualization.control.PickingGraphMousePlugin;
 import edu.uci.ics.jung.visualization.decorators.*;
+
+import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JFrame;
 import java.awt.event.*;
@@ -72,24 +74,24 @@ public class TaskGraph {
     	counter = 0;
     	oldNum = 0;
     	
-    	vertexPaint = new Transformer<String,Paint>() {
-            public Paint transform(String i) {
-                return Color.GREEN;
-            }
-        };
+//    	vertexPaint = new Transformer<String,Paint>() {
+//            public Paint transform(String i) {
+//                return Color.GREEN;
+//            }
+//        };
         
-        vertexShape = new Transformer<String,Shape>() {
-            public Shape transform(String i) {
-//                return new Rectangle(i.length()*15, 40);
-            	return new Rectangle(40, 40);
-            }
-        };
+//        vertexShape = new Transformer<String,Shape>() {
+//            public Shape transform(String i) {
+////                return new Rectangle(i.length()*15, 40);
+//            	return new Rectangle(40, 40);
+//            }
+//        };
         
-        vertexFont = new Transformer<String,Font>() {
-            public Font transform(String i) {
-                return new Font("Arial", Font.BOLD, 20);
-            }
-        };
+//        vertexFont = new Transformer<String,Font>() {
+//            public Font transform(String i) {
+//                return new Font("Arial", Font.BOLD, 20);
+//            }
+//        };
         
         gm = new DefaultModalGraphMouse();
         gm.setMode(ModalGraphMouse.Mode.PICKING);
@@ -151,16 +153,18 @@ public class TaskGraph {
     public TaskGraph getTaskGraph() {
 //    	layout = new ISOMLayout((DirectedSparseGraph<String, String>)g);
 //    	layout = new FRLayout2((DirectedSparseMultigraph<String, String>)g);
-    	layout = new FRLayout((DirectedSparseMultigraph<String, String>)g);
-    	((FRLayout)layout).setAttractionMultiplier(0.2);
-    	((FRLayout)layout).setRepulsionMultiplier(0.4);
-    	((FRLayout)layout).setMaxIterations(750);
-    	layout.setSize(new Dimension(counter*600,counter*600)); // sets the initial size of the layout space
+    	layout = new FRLayout<String, String>((DirectedSparseMultigraph<String, String>)g);
+    	((FRLayout<String, String>)layout).setAttractionMultiplier(0.2);
+    	((FRLayout<String, String>)layout).setRepulsionMultiplier(0.4);
+    	((FRLayout<String, String>)layout).setMaxIterations(100);
+    	layout.setSize(new Dimension(10000,10000)); // sets the initial size of the layout space
     	vv = new VisualizationViewer<String,String>(layout);
-    	vv.setPreferredSize(new Dimension(450,450)); //Sets the viewing area size
+    	vv.setPreferredSize(new Dimension(800,600)); //Sets the viewing area size
     	
-        vv.getRenderContext().setVertexFillPaintTransformer(vertexPaint);
-        vv.getRenderContext().setVertexShapeTransformer(vertexShape);
+    	vv.getRenderContext().setEdgeDrawPaintTransformer(new PickableEdgePaintTransformer<String,String>(vv.getPickedEdgeState(), Color.gray, Color.cyan));
+//    	vv.getRenderContext().setEdgeShapeTransformer(new EdgeShape.CubicCurve<String,String>());
+//        vv.getRenderContext().setVertexFillPaintTransformer(vertexPaint);
+//        vv.getRenderContext().setVertexShapeTransformer(vertexShape);
 
 //        vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
 //        vv.getRenderContext().setVertexFontTransformer(vertexFont);
@@ -174,6 +178,7 @@ public class TaskGraph {
 				
 				//System.out.println("COUNTER: "+counter+", OLDNUM: "+oldNum);
 				if((counter>oldNum) && ((FRLayout)layout).done()) {
+//					layout.setSize(new Dimension(counter*10,counter*10));
 					layout.initialize();
 					Relaxer relaxer = vv.getModel().getRelaxer();
 					if(relaxer != null) {
@@ -192,6 +197,20 @@ public class TaskGraph {
 //				}
 			}
         });
+        
+        // add a listener for ToolTips
+        vv.setVertexToolTipTransformer(new ToStringLabeller() {
+
+        	/* (non-Javadoc)
+        	 * @see edu.uci.ics.jung.visualization.decorators.DefaultToolTipFunction#getToolTipText(java.lang.Object)
+        	 */
+        	@Override
+        	public String transform(Object v) {
+        		if(v instanceof Graph) {
+        			return ((Graph)v).getVertices().toString();
+        		}
+        		return super.transform(v);
+        	}});
     	
     	return this;
     }
