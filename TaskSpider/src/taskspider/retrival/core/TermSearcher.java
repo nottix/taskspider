@@ -3,6 +3,8 @@
  */
 package taskspider.retrival.core;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
@@ -27,6 +29,7 @@ import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
+import taskspider.retrival.queryexpansion.QueryExpansion;
 import taskspider.retrival.wordnet.*;
 import taskspider.util.debug.Debug;
 import taskspider.util.properties.PropertiesReader;
@@ -45,6 +48,7 @@ public class TermSearcher {
 	public TermSearcher(String filename) {
 		try {
 			indexPath = PropertiesReader.getProperty("indexPath")+filename;
+			Debug.println("IndexPath: "+indexPath, 1);
 			indexDir = FSDirectory.getDirectory(indexPath);
 			this.task = filename;
 			isearcher = null;
@@ -79,7 +83,7 @@ public class TermSearcher {
 				result = isearcher.search(query);
 				Debug.println("Search hits: "+result.length(), 1);
 
-				Query expandedQuery = this.expandQuery(query, query.toString(), "body");
+				Query expandedQuery = this.expandQuery(query, query.toString(), result, isearcher, analyzer);
 				Debug.println("Expanded: "+expandedQuery.toString(), 1);
 				result = isearcher.search(expandedQuery);
 				Debug.println("Search with expanded query hits: "+result.length(), 1);
@@ -108,32 +112,56 @@ public class TermSearcher {
 		}
 	}
 	
-	private Query expandQuery(Query query, String queryString, String field) {
-		try {
-			String wnIndexPath = PropertiesReader.getProperty("wordnetIndexPath");
-			Directory wnIndexDir = FSDirectory.getDirectory(wnIndexPath);
-			IndexSearcher wnSearcher = new IndexSearcher(wnIndexDir);
-			StandardAnalyzer analyzer = new StandardAnalyzer();
+	public Query expandQuery(Query query, String queryString, Hits hits, IndexSearcher searcher, StandardAnalyzer analyzer) {
+//		try {
+//			String wnIndexPath = PropertiesReader.getProperty("wordnetIndexPath");
+//			Directory wnIndexDir = FSDirectory.getDirectory(wnIndexPath);
+//			IndexSearcher wnSearcher = new IndexSearcher(wnIndexDir);
+//			
+//			StringTokenizer tokens = new StringTokenizer(queryString);
+//			Query[] queries = new Query[tokens.countTokens()];
+//			String sub, fieldSub, termSub;
+//			int dots, i=0;
+//			
+//			while(tokens.hasMoreTokens()) {
+//				sub = tokens.nextToken();
+//				dots = sub.indexOf(":");
+//				termSub = sub.substring(dots+1);
+//				fieldSub = sub.substring(0, dots);
+//				Debug.println("Field: "+fieldSub+", Term: "+termSub, 1);
+//				queries[i++]=SynExpand.expand(termSub, wnSearcher, analyzer, fieldSub, 0);
+//				
+//			}
+//			
+//			return query.combine(queries);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+		
+        try {
+			Similarity similarity = query.getSimilarity( searcher );
 			
-			StringTokenizer tokens = new StringTokenizer(queryString);
-			Query[] queries = new Query[tokens.countTokens()];
-			String sub, fieldSub, termSub;
-			int dots, i=0;
-			
-			while(tokens.hasMoreTokens()) {
-				sub = tokens.nextToken();
-				dots = sub.indexOf(":");
-				termSub = sub.substring(dots+1);
-				fieldSub = sub.substring(0, dots);
-				Debug.println("Field: "+fieldSub+", Term: "+termSub, 1);
-				queries[i++]=SynExpand.expand(termSub, wnSearcher, analyzer, fieldSub, 0);
-				
-			}
-			
-			return query.combine(queries);
+			File file = new File("/home/avenger/Programs/taskspider/conf/config.properties");
+			FileInputStream fis = new FileInputStream(file);
+//			Properties properties = PropertiesReader.getProperties();
+			Properties properties = new Properties();
+			properties.load(fis);
+
+			QueryExpansion queryExpansion = new QueryExpansion( analyzer, searcher, similarity, properties );
+			Query retQuery = queryExpansion.expandQuery( queryString, hits, properties );
+			return retQuery;
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		catch (ParseException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+        
 		return null;
 	}
 }

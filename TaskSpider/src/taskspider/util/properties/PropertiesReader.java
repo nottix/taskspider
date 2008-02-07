@@ -47,5 +47,12 @@ public class PropertiesReader {
 		}
 		return null;
 	}
+	
+	public static Properties getProperties() {
+		if(properties == null) {
+			getProperty("indexPath");
+		}
+		return properties;
+	}
 
 }
