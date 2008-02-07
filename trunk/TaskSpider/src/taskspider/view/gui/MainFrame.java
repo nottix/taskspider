@@ -653,7 +653,7 @@ public class MainFrame extends JFrame {
 
 					if(controller==null)
 						controller = new Controller();
-					System.out.println("RESULT: "+controller.search(queryField.getText()));
+					System.out.println("RESULT: "+controller.search(taskField.getText(), queryField.getText()));
 					if(browserCheck.isSelected()) {
 						try {
 							htmlPanel.navigate(controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0"));

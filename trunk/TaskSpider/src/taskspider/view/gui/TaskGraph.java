@@ -156,7 +156,7 @@ public class TaskGraph {
     	layout = new FRLayout<String, String>((DirectedSparseMultigraph<String, String>)g);
     	((FRLayout<String, String>)layout).setAttractionMultiplier(0.2);
     	((FRLayout<String, String>)layout).setRepulsionMultiplier(0.4);
-    	((FRLayout<String, String>)layout).setMaxIterations(100);
+    	((FRLayout<String, String>)layout).setMaxIterations(50);
     	layout.setSize(new Dimension(10000,10000)); // sets the initial size of the layout space
     	vv = new VisualizationViewer<String,String>(layout);
     	vv.setPreferredSize(new Dimension(800,600)); //Sets the viewing area size

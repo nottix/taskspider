@@ -61,7 +61,7 @@
 	 		</fileset>
 		</copy>
 		<mkdir dir="${instdir}/conf"/>
-		<copy preservelastmodified="true" todir="${instdir}//conf">
+		<copy preservelastmodified="true" todir="${instdir}/conf">
 			<fileset dir="./conf">
 		    	<include name="*.*" />
 		    </fileset>
