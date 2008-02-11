@@ -45,6 +45,7 @@ import org.lobobrowser.main.PlatformInit;
 import taskspider.controller.BrowserControl;
 import taskspider.controller.Controller;
 import taskspider.util.debug.Debug;
+import taskspider.retrival.core.TermSearcher;
 import taskspider.util.properties.PropertiesReader;
 import edu.uci.ics.jung.visualization.control.*;
 import websphinx.Link;
@@ -120,6 +121,8 @@ public class MainFrame extends JFrame {
 	private BrowserPanel htmlPanel = null;
 
 	private JCheckBox browserCheck = null;
+	
+	private JCheckBox typeCheck = null;
 
 	private JPanel jPanel5 = null;
 
@@ -196,14 +199,14 @@ public class MainFrame extends JFrame {
 								//controller.getGroupResult();
 								if(browserCheck.isSelected()) {
 									try {
-										htmlPanel.navigate(controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0"));
+										htmlPanel.navigate(controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0", typeCheck.isSelected() ? "1" : "0"));
 									} catch (MalformedURLException e1) {
 										// TODO Auto-generated catch block
 										e1.printStackTrace();
 									}
 								}
 								else {
-									BrowserControl.displayURL("", controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0"));
+									BrowserControl.displayURL("", controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0", typeCheck.isSelected() ? "1" : "0"));
 								}
 							}
 						}
@@ -437,6 +440,19 @@ public class MainFrame extends JFrame {
 		}
 		return rootsCheck;
 	}
+	
+	/**
+	 * This method initializes typeCheck	
+	 * 	
+	 * @return javax.swing.JCheckBox	
+	 */
+	private JCheckBox getTypeCheck() {
+		if (typeCheck == null) {
+			typeCheck = new JCheckBox();
+			typeCheck.setText("Rocchio pseudo-relevance feedback");
+		}
+		return typeCheck;
+	}
 
 	/**
 	 * This method initializes deepCombo	
@@ -653,17 +669,17 @@ public class MainFrame extends JFrame {
 
 					if(controller==null)
 						controller = new Controller();
-					System.out.println("RESULT: "+controller.search(taskField.getText(), queryField.getText()));
+					System.out.println("RESULT: "+controller.search(taskField.getText(), queryField.getText(), typeCheck.isSelected() ? TermSearcher.ROCCHIO : TermSearcher.WORDNET));
 					if(browserCheck.isSelected()) {
 						try {
-							htmlPanel.navigate(controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0"));
+							htmlPanel.navigate(controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0", typeCheck.isSelected() ? "1" : "0"));
 						} catch (MalformedURLException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 					}
 					else {
-						BrowserControl.displayURL("", controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0"));
+						BrowserControl.displayURL("", controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0", typeCheck.isSelected() ? "1" : "0"));
 					}
 					
 //					controller.search(queryField.getText());
@@ -829,6 +845,11 @@ public class MainFrame extends JFrame {
 			frameCheck.setSelected(true);
 		else
 			frameCheck.setSelected(false);
+		
+		if(PropertiesReader.getProperty("typeSearch").equals("1"))
+			typeCheck.setSelected(true);
+		else
+			typeCheck.setSelected(false);
 	}
 
 	/**
@@ -841,13 +862,20 @@ public class MainFrame extends JFrame {
 			GridBagConstraints gridBagConstraints16 = new GridBagConstraints();
 			gridBagConstraints16.gridx = 1;
 			gridBagConstraints16.gridy = 0;
+			gridBagConstraints16.anchor = GridBagConstraints.WEST;
 			GridBagConstraints gridBagConstraints8 = new GridBagConstraints();
-			gridBagConstraints8.gridx = -1;
-			gridBagConstraints8.gridy = -1;
+			gridBagConstraints8.gridx = 1;
+			gridBagConstraints8.gridy = 1;
+			gridBagConstraints8.anchor = GridBagConstraints.WEST;
+			GridBagConstraints gridBagConstraints80 = new GridBagConstraints();
+			gridBagConstraints80.gridx = 1;
+			gridBagConstraints80.gridy = 2;
+			gridBagConstraints80.anchor = GridBagConstraints.WEST;
 			jPanel5 = new JPanel();
 			jPanel5.setLayout(new GridBagLayout());
 			jPanel5.add(getBrowserCheck(), gridBagConstraints8);
 			jPanel5.add(getFrameCheck(), gridBagConstraints16);
+			jPanel5.add(getTypeCheck(), gridBagConstraints80);
 		}
 		return jPanel5;
 	}

@@ -6,13 +6,13 @@
 
 <%
 String query;
-if((query=request.getQueryString())!=null && TaskBean.getArg("index", request.getQueryString()).equals("0") && TaskBean.getArg("do", request.getQueryString())!=null) {
+if((query=request.getQueryString())!=null && TaskBean.getArg("index", request.getQueryString()).equals("0") && TaskBean.getArg("do", request.getQueryString())!=null && TaskBean.getArg("type", request.getQueryString())!=null) {
 	//out.println("SIZE: "+TaskBean.doSearch( TaskBean.getArg("task", query), TaskBean.getArg("query", query), TaskBean.getArg("do", request.getQueryString()).equals("1") ));
-	TaskBean.doSearch( TaskBean.getArg("task", query), TaskBean.getArg("query", query), TaskBean.getArg("do", request.getQueryString()).equals("1") );
+	TaskBean.doSearch( TaskBean.getArg("task", query), TaskBean.getArg("query", query), TaskBean.getArg("do", request.getQueryString()).equals("1"), TaskBean.getArg("type", request.getQueryString()) );
 	Thread.sleep(1000);
 }
 else if(request.getParameter("Submit")!=null) {
-	out.println(TaskBean.doSearch(request.getParameter("taskString"), request.getParameter("query"), true));
+	out.println(TaskBean.doSearch(request.getParameter("taskString"), request.getParameter("query"), true, "1"));
 }
 %>
 

@@ -54,10 +54,10 @@ public class Controller extends Thread{
 		this.setDaemon(true);
 	}
 	
-	public String getQueryString(String task, String query, String frame) {
+	public String getQueryString(String task, String query, String frame, String type) {
 		task = task.replaceAll(" ", "%20");
 		query = query.replaceAll(" ", "%20");
-		return this.jspUrl+"?task="+task+"&query="+query+"&frame="+frame+"&index=0&do=1&";
+		return this.jspUrl+"?task="+task+"&query="+query+"&frame="+frame+"&index=0&do=1&type="+type+"&";
 	}
 	
 	public void setMessage(JLabel message) {
@@ -77,16 +77,16 @@ public class Controller extends Thread{
 			this.maxLevel = maxLevel;
 	}		
 	
-	public int search(String task, String query) {
+	public int search(String task, String query, int type) {
 //		if(searcher==null)
 			searcher = new TermSearcher(task);
-		return searcher.search(query);
+		return searcher.search(query, type);
 	}
 	
-	public int search(String query) {
+	public int search(String query, int type) {
 		if(searcher==null)
 			searcher = new TermSearcher(task);
-		return searcher.search(query);
+		return searcher.search(query, type);
 	}
 	
 	public Hits getResult() {

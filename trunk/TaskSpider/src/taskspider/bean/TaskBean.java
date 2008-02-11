@@ -33,7 +33,8 @@ public class TaskBean{
 	 * Do in input i parametri task e query, Qui dovresti fare l'operazione de
 	 * taskspider e poi riempirmi due vettori.
 	 */
-	public static String doSearch(String taskSearch, String querySearch, boolean redo){
+	public static String doSearch(String taskSearch, String querySearch, boolean redo, String typeStr){
+		int type = Integer.parseInt(typeStr);
 //		if(controller==null)
 //			controller = new Controller();
 //		
@@ -46,7 +47,7 @@ public class TaskBean{
 			controller = new Controller();
 			if(taskSearch.indexOf("%20")>0)
 				taskSearch = taskSearch.replaceAll("%20", " ");
-			if((ret=controller.search(taskSearch, querySearch))>0) {
+			if((ret=controller.search(taskSearch, querySearch, type))>0) {
 				total = ret;
 				if(taskSearch.indexOf(" ")>0)
 					taskSearch = taskSearch.replaceAll(" ", "%20");
