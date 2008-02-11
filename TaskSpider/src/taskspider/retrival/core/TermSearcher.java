@@ -39,6 +39,9 @@ import taskspider.util.properties.PropertiesReader;
  *
  */
 public class TermSearcher {
+	public static int ROCCHIO = 1;
+	public static int WORDNET = 0;
+	
 	private String indexPath;
 	private Directory indexDir;
 	private IndexSearcher isearcher;
@@ -68,7 +71,7 @@ public class TermSearcher {
 	 * @param queryString
 	 * @return
 	 */
-	public int search(String queryString) {
+	public int search(String queryString, int type) {
 		try {
 			if(IndexReader.indexExists(indexPath)) {
 				isearcher = new IndexSearcher(indexDir);
@@ -83,7 +86,7 @@ public class TermSearcher {
 				result = isearcher.search(query);
 				Debug.println("Search hits: "+result.length(), 1);
 
-				Query expandedQuery = this.expandQuery(query, query.toString(), result, isearcher, analyzer);
+				Query expandedQuery = this.expandQuery(query, query.toString(), result, isearcher, analyzer, type);
 				Debug.println("Expanded: "+expandedQuery.toString(), 1);
 				result = isearcher.search(expandedQuery);
 				Debug.println("Search with expanded query hits: "+result.length(), 1);
@@ -112,56 +115,60 @@ public class TermSearcher {
 		}
 	}
 	
-	public Query expandQuery(Query query, String queryString, Hits hits, IndexSearcher searcher, StandardAnalyzer analyzer) {
-//		try {
-//			String wnIndexPath = PropertiesReader.getProperty("wordnetIndexPath");
-//			Directory wnIndexDir = FSDirectory.getDirectory(wnIndexPath);
-//			IndexSearcher wnSearcher = new IndexSearcher(wnIndexDir);
-//			
-//			StringTokenizer tokens = new StringTokenizer(queryString);
-//			Query[] queries = new Query[tokens.countTokens()];
-//			String sub, fieldSub, termSub;
-//			int dots, i=0;
-//			
-//			while(tokens.hasMoreTokens()) {
-//				sub = tokens.nextToken();
-//				dots = sub.indexOf(":");
-//				termSub = sub.substring(dots+1);
-//				fieldSub = sub.substring(0, dots);
-//				Debug.println("Field: "+fieldSub+", Term: "+termSub, 1);
-//				queries[i++]=SynExpand.expand(termSub, wnSearcher, analyzer, fieldSub, 0);
-//				
-//			}
-//			
-//			return query.combine(queries);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-		
-        try {
-			Similarity similarity = query.getSimilarity( searcher );
-			
-			File file = new File("/home/avenger/Programs/taskspider/conf/config.properties");
-			FileInputStream fis = new FileInputStream(file);
-//			Properties properties = PropertiesReader.getProperties();
-			Properties properties = new Properties();
-			properties.load(fis);
-
-			QueryExpansion queryExpansion = new QueryExpansion( analyzer, searcher, similarity, properties );
-			Query retQuery = queryExpansion.expandQuery( queryString, hits, properties );
-			return retQuery;
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public Query expandQuery(Query query, String queryString, Hits hits, IndexSearcher searcher, StandardAnalyzer analyzer, int type) {
+		if(type==this.WORDNET) {
+			try {
+				String wnIndexPath = PropertiesReader.getProperty("wordnetIndexPath");
+				Directory wnIndexDir = FSDirectory.getDirectory(wnIndexPath);
+				IndexSearcher wnSearcher = new IndexSearcher(wnIndexDir);
+				
+				StringTokenizer tokens = new StringTokenizer(queryString);
+				Query[] queries = new Query[tokens.countTokens()];
+				String sub, fieldSub, termSub;
+				int dots, i=0;
+				
+				while(tokens.hasMoreTokens()) {
+					sub = tokens.nextToken();
+					dots = sub.indexOf(":");
+					termSub = sub.substring(dots+1);
+					fieldSub = sub.substring(0, dots);
+					Debug.println("Field: "+fieldSub+", Term: "+termSub, 1);
+					queries[i++]=SynExpand.expand(termSub, wnSearcher, analyzer, fieldSub, 0);
+					
+				}
+				
+				return query.combine(queries);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-        
+		else if(type==this.ROCCHIO) {
+	        try {
+				Similarity similarity = query.getSimilarity( searcher );
+				
+				File file = new File("/home/avenger/Programs/taskspider/conf/config.properties");
+				FileInputStream fis = new FileInputStream(file);
+	//			Properties properties = PropertiesReader.getProperties();
+				Properties properties = new Properties();
+				properties.load(fis);
+	
+				queryString = queryString.replaceAll("body:", "");
+				QueryExpansion queryExpansion = new QueryExpansion( analyzer, searcher, similarity, properties );
+				Query retQuery = queryExpansion.expandQuery( queryString, hits, properties );
+				return retQuery;
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+			catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 		return null;
 	}
 }
