@@ -1,0 +1,15 @@
+\chapter{Spider}\label{cap:spider}
+Come anticipato, il cuore dello Spider è stato preso da un progetto già esistente (Websphinx) per evitare di perdere molto tempo nella realizzazione da zero. Per spiegare meglio il funzionamento del sistema di spidering che abbiamo realizzato è riportato di seguito un esempio di funzionamento completo.
+\section{Funzionamento}
+Per avviare lo Spider è necessario indicargli un set di indirizzi di partenza, i quali possono essere ottenuti anche automaticamente tramite un modulo che è stato realizzato appositamente (vedere \ref{cap:spider:roots}). Lo spidering può essere effettuato a qualsiasi livello di profondità, per evitare tempi di latenza troppo elevati si è deciso di impostare un range di 1-5, e come livello di default 3; con tale valore impostato è risultato uno spidering abbastanza veloce e i dati ottenuti rilevati.
+\begin{enumerate}
+\item Impostate le varie opzioni iniziali è possibile avviare lo Spider che inizierà ad esplorare ogni pagina web a partire dal primo indirizzo del set di partenza;
+\item durante la navigazione delle pagine, ad intervalli di tempo regolari viene avviato un secondo Thread che si occupa della scansione delle pagine esplorate per filtrare le pagine rilevanti dalle altre;
+	\begin{enumerate}
+	\item per ogni pagina rilevante si memorizzano tutte le sue informazioni che vengono utilizzate dal motore di retrival per 				l'indicizzazione; per avere dettagli vedere \ref{cap:retrival};
+	\item inoltre, viene controlla la presenza della pagina nell'indice, e se presente si confrontano le date delle due pagine per 			sapere se è necessario sostituire la pagina nell'indice con una più aggiornata;
+	\end{enumerate}
+\item lo spidering potrebbe andare avanti all'infinito se non fosse per il sistema che si è adottato per interromperlo; tale sistema consiste nel verificare, ad intervalli di tempo regolari, se il numero di pagine recuperate al precedente controllo è uguale al numero di pagine recuperate all'ultimo controllo. Questa operazione viene eseguita per circa 4 volte, il che rende abbastanza affidabile l'interruzione dello spidering.
+\end{enumerate}
+\section{Indirizzi automatici}\label{cap:spider:roots}
+Si è realizzato un modulo in grado di reperire degli indirizzi di partenza per lo spidering. Tale modulo è stato progettato sfruttando le API di Google$^{TM}$, le quali ci consentono di effettuare una ricerca sul web tramite il suo motore di ricerca. In questo modo si può avviare lo Spider con un set di indirizzi molto rilevanti il che ci consente di avere dei risultati validi. L'unico problema che si è riscontrato con l'utilizzo di tali API è che siamo stati costretti ad utilizzare un servizio che Google$^{TM}$ fornisce solo per mantenere la compatibilità con vecchie applicazioni, infatti ultimamente Google$^{TM}$ ha introdotto dei servizi sostitutivi che consentono di effettuare tali ricerche solo da pagine web e non più da codice Java.
