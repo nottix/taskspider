@@ -33,7 +33,7 @@ public class TaskBean{
 	 * Do in input i parametri task e query, Qui dovresti fare l'operazione de
 	 * taskspider e poi riempirmi due vettori.
 	 */
-	public static String doSearch(String taskSearch, String querySearch, boolean redo, String typeStr){
+	public static String doSearch(String taskSearch, String querySearch, String redo_str, String typeStr){
 		int type = Integer.parseInt(typeStr);
 //		if(controller==null)
 //			controller = new Controller();
@@ -43,6 +43,11 @@ public class TaskBean{
 //		}
 		//first = 0;
 		int ret;
+		boolean redo;
+		if(redo_str.indexOf("1") >= 0)
+			redo = true;
+		else
+			redo = false;
 		if(redo) {
 			controller = new Controller();
 			if(taskSearch.indexOf("%20")>0)
@@ -53,12 +58,13 @@ public class TaskBean{
 					taskSearch = taskSearch.replaceAll(" ", "%20");
 				task = taskSearch;
 				query = querySearch;
-				try {
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				System.out.println("OOOOOOOOOOOOOOK: "+taskSearch);
+//				try {
+//					Thread.sleep(2000);
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
 				return String.valueOf(ret);
 				//return "1";
 			}
@@ -81,9 +87,12 @@ public class TaskBean{
 	 */
 	public static Vector<Document> getResults(String indexString){
 		int index = Integer.parseInt(indexString);
-		if(controller==null)
+		if(controller==null) {
+			System.out.println("NULL");
 			return new Vector<Document>();
+		}
 		if(index==0) {
+			System.out.println("here");
 			hits = controller.getResult();
 			results = new Vector<Document>();
 			if(hits!=null && hits.length()>0) {
@@ -139,9 +148,10 @@ public class TaskBean{
 		System.out.println("QUERYSTRING: "+queryString+", name: "+name);
 		qString = queryString;
 		
-		int start = queryString.indexOf(name)+name.length()+1;
+		int start = queryString.indexOf(name);
 		if(start<0)
 			return null;
+		start += name.length()+1;
 		int end = queryString.indexOf("&", start);
 		if(end<0)
 			end = queryString.length()-1;
@@ -158,7 +168,7 @@ public class TaskBean{
 			if(index==i)
 				ret += "<a class=\"description\"> "+(i+1)+" </a>";
 			else {
-				ret += "<a href=\"http://localhost:8180/taskspider/index.jsp?task="+task+"&query="+query+"&frame="+(getArg("frame", qString).equals("1") ? "1" : "0")+"&index="+i+"&\" class=\"description\"> "+(i+1)+" </a>";
+				ret += "<a href=\"http://localhost:8180/taskspider/index.jsp?task="+task+"&query="+query+"&do=0&frame="+(getArg("frame", qString).equals("1") ? "1" : "0")+"&index="+i+"&\" class=\"description\"> "+(i+1)+" </a>";
 			}
 		}
 		return ret;
