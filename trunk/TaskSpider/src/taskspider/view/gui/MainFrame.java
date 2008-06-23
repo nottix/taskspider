@@ -146,7 +146,7 @@ public class MainFrame extends JFrame {
 	 * @return void
 	 */
 	private void initialize() {
-		this.setSize(1282, 795);
+		this.setSize(800, 600);
 		this.setLocation(new Point(200, 200));
 		this.setJMenuBar(getJJMenuBar());
 		this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
