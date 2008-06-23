@@ -1,0 +1,54 @@
+\chapter{Retrival}\label{cap:retrival}
+Una parte fondamentale del progetto è proprio quella riguardante il Retrival, che gestisce tutte le operazioni riguardanti l'indice dei documenti e la ricerca. In particolare si è realizzato un sistema che sfrutta la libreria Lucene per gestire in modo semplice l'indice.
+\section{Documenti}\label{cap:retrival:docs}
+Il software che si è realizzato si basa fortemente sulla gestione dei documenti registrati nell'indice, quindi risulta fondamentale riportare la struttura dei documenti.
+Ogni documento ha un riferimento uno ad uno con una pagina web recuperata, infatti vengono salvati ed indicizzati i seguenti campi:
+\begin{description}
+\item[URL] tale campo contiene semplicemente l'URL da cui è stato possibile raggiungere la pagina in questione;
+\item[Title] contiene il titolo della pagina;
+\item[Description] alcune pagine web hanno dei tag speciali che contengono la descrizione del contenuto della pagina;
+\item[Keywords] le parole chiavi contenute nel tag keywords;
+\item[Keyphrases] simili alle keywords, ma più rare;
+\item[Body] contiene il contenuto del tag body, ovvero gran parte del pagina recuperata;
+\item[Date] sarebbe la data di scadenza della pagina, viene utilizzata per l'eventuale aggiornamento del documento nell'indice;
+\end{description}
+Tutti i campi elencati sono necessari per poter effettuare una ricerca sufficientemente rilevante per la portata del progetto. Come può essere facilmente intuito, il campo più importante risulta essere ``Body'', oltre all'indispensabile ``URL'' che viene usato come chiave per il documento; infatti non possono coesistere nell'indice più documenti con lo stesso ``URL''.
+\section{Indicizzatore}\label{cap:retrival:indexer}
+Un'altra parte importante del software in questione è l'Indicizzatore (o Indexer) che si occupa della gestione vera e propria dell'indice dei documenti. In particolare, l'Indexer consente di aggiungere dei documenti nell'indice, evitando l'inserimento di duplicati (vedere \ref{cap:retrival:docs}); oltretutto è anche in grado di sfruttare il campo ``Date'' per un eventuale aggiornamento del documento.
+Questo modulo è risultato essere uan parte del progetto in cui viene speso gran parte del tempo, a causa dell'elevato numero di nuovi documenti da aggiungere (o modificare) nell'indice.
+\section{Ricerca}\label{cap:retrival:searcher}
+La ricerca è un altro tassello fondamentale per il raggiungimento degli obiettivi del progetto; infatti è necessario ricercare sia per filtrare i documenti in base al task e sia effettuare delle ricerche sui documenti filtrati. Per tali motivi sono stati realizzati due moduli, uno per ogni tipo di ricerca.
+\subsection{Ricerca task}
+Il primo tipo di ricerca genera una query a partire dal task richiesto, in particolare vengono espletati i seguenti passi:
+\begin{enumerate}
+\item si prende il task inserito dall'utente, che potrebbe essere ``Università Tor Vergata'', e lo si divide in token (Università, Tor, Vergata);
+\item per ogni campo (``URL'', ``keywords'', ``title'', ``body'') si prepara una query del seguente tipo:
+\begin{center}
+\texttt{URL:Università AND URL:Tor AND URL:Vergata}
+\end{center}
+\item in seguito si mettono in OR tutte le query preparate per ottenere:
+\begin{center}
+\texttt{(URL:Università AND URL:Tor AND URL:Vergata) OR (...) OR (...) OR (...)}
+\end{center}
+\end{enumerate}
+Formulando tale query non si fa altro che ricercare nell'indice uno o più documenti con i parametri richiesti. Si deciso di imporre il vincolo che l'intero task deve essere presente in almeno un campo, questo per rendere più rilevanti i risultati della ricerca. In principio si erano impostati altri tipi di vincoli, in particolare era sufficiente che un solo token fosse presente in un qualsiasi campo per rendere il documento rilevante; il che rendeva un set di risultati molto scadenti.
+\subsection{Ricerca query (Wordnet - Rocchio)}
+Per quando riguarda la ricerca all'interno dei documenti già filtrati tramite ``ricerca task'', si è deciso di implementare un sistema molto più complesso ed efficace. Il testo di ricerca che viene inserito dall'utente può risultare poco specifico, il che rende i risultati molto vaghi; per evitare di incorrere in tali problemi si è deciso di implementare un sistema di ``Query Expansion''. In principio si è realizzato un modulo di espansione basato su ``Wordnet'', in seguito se ne è aggiunto uno basato su ``Rocchio'' che ha avuto un impatto migliore sui risultati.
+\paragraph{Wordnet}
+Tale componente si compone di:
+\begin{enumerate}
+\item un file, scritto in Prolog, contenente tutte le parole di Wordnet;
+\item un modulo in grado di indicizzare le parole in un indice tramite Lucene;
+\item un altro modulo che ricerca tutti i sinonimi delle parola che si richiede.
+\end{enumerate}
+Utilizzando questo sistema si è raggiunta una precisione nei risultati più elevata. In alcuni casi si incombe in ambiguità a causa del constesto in cui si trovano le parole, ad esempio se si espande una query del tipo ``Apple'' il sistema aggiunge parole del tipo ``fruit'', il che non sarebbe sbagliato se noi stessimo cercando il frutto; ma se si vuole ricercare la società ``Apple'' allora il risultato di Wordnet sarebbe totalmente errato.
+\paragraph{Rocchio}
+Per evitare di incorrere in problemi come quelli appena citati si è realizzato un altro modulo di espansione query utilizzando il sistema di \textit{Pseudo-relevance feedback Rocchio}. Tale metodo funziona nel seguente modo:
+\begin{enumerate}
+\item si prende la query desiderata dall'utente e si effettua la ricerca nell'indice;
+\item con i risultati ottenuti si effettua lo pseudo-relevance feedback considerando rilevanti i primi 10 documenti;
+\item si prendono i termini dei documenti rilevanti e si pesano secondo l'algoritmo;
+\item si aggiungono i termini pesati alla precedente query;
+\item viene rieseguita una nuova ricerca con la nuova query.
+\end{enumerate}
+Con tale metodo è risultato un aumento della precisione nei documenti ritrovati, infatti a differenza del metodo Wordnet in questo caso è molto più difficile incorrere in ambiguità delle parole. Un punto a favore di Wordnet può andare sotto l'aspetto della espressività della query, questo perchè con il sistema Rocchio realizzato non possono essere fatte espansioni di query che specificano il campo (``URL'', ``title'' ecc.) del termine. Per evitare un'elevata complessità computazionale è stata impostata una espansione che considera soltanto il campo ``body''. Tale vincolo ha senso anche sotto altri aspetti, come il fatto che gran parte del contenuto informativo di una pagina web è proprio nel ``body''.
