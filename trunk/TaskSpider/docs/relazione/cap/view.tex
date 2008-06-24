@@ -1,8 +1,8 @@
 \chapter{View}\label{cap:view}
 In questo capitolo si tratterà la componente \textit{View} del sistema realizzato. In tale livello è stata implementata l'interfaccia grafica che consente una semplice e rapida interazione con lo Spider, in particolare le interfaccie progettate sono di tipo:
 \begin{description}
-\item[Desktop Application] realizzata puramente per utilizzo di tipo desktop;
-\item[Web Application] per un utilizzo di tipo web, ovvero tramite browser.
+\item[Desktop Application:] realizzata puramente per utilizzo di tipo desktop;
+\item[Web Application:] per un utilizzo di tipo web, ovvero tramite browser.
 \end{description}
 Si è deciso di intraprendere questa strada per rendere il più user-friendly possibile la nostra applicazione, infatti, grazie alla capacità di gestione delle interazioni desktop$\Leftrightarrow$web che ha il Java, è risultato molto semplice comunicare i risultati delle ricerche da desktopApp alla webApp. In questo modo si è realizzata una interfaccia molto simile ai motori di ricerca che vengono utilizzati quotidianamente sul web. Un esempio pratico di quanto esposto può essere il seguente:
 \begin{enumerate}
@@ -41,4 +41,4 @@ Si è deciso di realizzare una pagina web in grado di effettuare delle ricerca s
 \paragraph{Solo ricerca}
 Questo caso si ha quando si accede alla pagina direttamente dal browser, senza passare argomenti tramite barra degli indirizzi. Questa modalità consente di effettuare una ricerca sugli indici già memorizzati sul sistema; la ricerca può essere avviata utilizzando i campi Task e Query appositamente creati. I risultati possono essere visualizzati sia come un semplice elenco di indirizzi oppure anche con un albero che riunisce i risultati per dominio.
 \paragraph{Spidering e Ricerca}
-Questo secondo caso si verifica quando la pagina web viene acceduta dalla Desktop Application, la quale effettua lo spidering ed in seguito richiama la pagina. E' opportuno specificare che la pagina, in realtà si comporta sempre nello stesso modo, ovvero esegue una ricerca sull'indice richiesto. C'è un unica differenza rispetto al caso precedente, ovvero che nella modalità attuale tutti i dati per effettuare la ricerca vengono passati tramite barra degli indirizzi (QueryString); inoltre l'albero dei risultati per domino è opzionale.
+Questo secondo caso si verifica quando la pagina web viene acceduta dalla Desktop Application, la quale effettua lo spidering ed in seguito richiama la pagina. E' opportuno specificare che la pagina, in realtà si comporta sempre nello stesso modo, ovvero esegue una ricerca sull'indice richiesto. C'è un unica differenza rispetto al caso precedente, ovvero che nella modalità attuale tutti i dati per effettuare la ricerca vengono passati tramite barra degli indirizzi (\var{QueryString}); inoltre l'albero dei risultati per domino è opzionale.
