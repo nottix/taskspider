@@ -47,6 +47,7 @@ public class TermSearcher {
 	private IndexSearcher isearcher;
 	private Hits result;
 	private String task;
+	private Query expandedQuery;
 	
 	public TermSearcher(String filename) {
 		try {
@@ -81,15 +82,18 @@ public class TermSearcher {
 				StandardAnalyzer analyzer = new StandardAnalyzer();
 				QueryParser parser = new QueryParser("body", analyzer);
 				Query query = parser.parse(queryString);
+				expandedQuery = query;
 
 				Debug.println("Normal: "+query.toString(), 1);
 				result = isearcher.search(query);
 				Debug.println("Search hits: "+result.length(), 1);
 
-				Query expandedQuery = this.expandQuery(query, query.toString(), result, isearcher, analyzer, type);
-				Debug.println("Expanded: "+expandedQuery.toString(), 1);
-				result = isearcher.search(expandedQuery);
-				Debug.println("Search with expanded query hits: "+result.length(), 1);
+				if(type!=-1) {
+					expandedQuery = this.expandQuery(query, query.toString(), result, isearcher, analyzer, type);
+					Debug.println("Expanded: "+expandedQuery.toString(), 1);
+					result = isearcher.search(expandedQuery);
+					Debug.println("Search with expanded query hits: "+result.length(), 1);
+				}
 
 				return result.length();
 			}
@@ -104,6 +108,10 @@ public class TermSearcher {
 			e.printStackTrace();
 		}
 		return 0;
+	}
+	
+	public Query getExpandedQuery() {
+		return expandedQuery;
 	}
 	
 	public void close() {

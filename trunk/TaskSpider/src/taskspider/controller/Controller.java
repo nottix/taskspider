@@ -4,6 +4,7 @@
 package taskspider.controller;
 
 import java.io.IOException;
+import org.apache.lucene.search.Query;
 import java.net.MalformedURLException;
 import java.util.Vector;
 import java.util.Hashtable;
@@ -81,6 +82,10 @@ public class Controller extends Thread{
 //		if(searcher==null)
 			searcher = new TermSearcher(task);
 		return searcher.search(query, type);
+	}
+	
+	public Query getExpandedQuery() {
+		return searcher.getExpandedQuery();
 	}
 	
 	public int search(String query, int type) {
