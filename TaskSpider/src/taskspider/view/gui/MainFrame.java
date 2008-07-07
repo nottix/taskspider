@@ -128,6 +128,10 @@ public class MainFrame extends JFrame {
 
 	private JCheckBox frameCheck = null;
 	
+	private JLabel jLabel4 = null;
+	
+	private JTextField expQueryField = null;
+	
 	//private HtmlRendererContext rendererContext = null;
 
 	/**
@@ -178,10 +182,10 @@ public class MainFrame extends JFrame {
 		if (jPanel == null) {
 			GridBagConstraints gridBagConstraints17 = new GridBagConstraints();
 			gridBagConstraints17.gridx = 1;
-			gridBagConstraints17.gridy = 5;
+			gridBagConstraints17.gridy = 6;
 			GridBagConstraints gridBagConstraints15 = new GridBagConstraints();
 			gridBagConstraints15.gridx = 1;
-			gridBagConstraints15.gridy = 9;
+			gridBagConstraints15.gridy = 10;
 			messageLabel = new JLabel();
 			messageLabel.setText("");
 			messageLabel.addPropertyChangeListener("text",
@@ -213,7 +217,7 @@ public class MainFrame extends JFrame {
 					});
 			GridBagConstraints gridBagConstraints14 = new GridBagConstraints();
 			gridBagConstraints14.fill = GridBagConstraints.BOTH;
-			gridBagConstraints14.gridy = 8;
+			gridBagConstraints14.gridy = 9;
 			gridBagConstraints14.weightx = 1.0;
 			gridBagConstraints14.insets = new Insets(4, 0, 4, 0);
 			gridBagConstraints14.gridx = 1;
@@ -221,26 +225,26 @@ public class MainFrame extends JFrame {
 			gridBagConstraints21.gridx = 1;
 			gridBagConstraints21.fill = GridBagConstraints.HORIZONTAL;
 			gridBagConstraints21.insets = new Insets(4, 0, 4, 0);
-			gridBagConstraints21.gridy = 7;
+			gridBagConstraints21.gridy = 8;
 			GridBagConstraints gridBagConstraints11 = new GridBagConstraints();
 			gridBagConstraints11.fill = GridBagConstraints.VERTICAL;
-			gridBagConstraints11.gridy = 4;
+			gridBagConstraints11.gridy = 5;
 			gridBagConstraints11.weightx = 1.0;
 			gridBagConstraints11.insets = new Insets(4, 0, 4, 0);
 			gridBagConstraints11.gridx = 1;
 			GridBagConstraints gridBagConstraints10 = new GridBagConstraints();
 			gridBagConstraints10.gridx = 0;
-			gridBagConstraints10.gridy = 4;
+			gridBagConstraints10.gridy = 5;
 			jLabel3 = new JLabel();
 			jLabel3.setText("Deep level:");
 			GridBagConstraints gridBagConstraints6 = new GridBagConstraints();
 			gridBagConstraints6.gridx = 1;
 			gridBagConstraints6.weightx = 1.0;
 			gridBagConstraints6.insets = new Insets(4, 0, 4, 0);
-			gridBagConstraints6.gridy = 2;
+			gridBagConstraints6.gridy = 3;
 			GridBagConstraints gridBagConstraints5 = new GridBagConstraints();
 			gridBagConstraints5.fill = GridBagConstraints.HORIZONTAL;
-			gridBagConstraints5.gridy = 3;
+			gridBagConstraints5.gridy = 4;
 			gridBagConstraints5.weightx = 1.0;
 			gridBagConstraints5.insets = new Insets(4, 0, 4, 0);
 			gridBagConstraints5.gridx = 1;
@@ -254,7 +258,7 @@ public class MainFrame extends JFrame {
 			gridBagConstraints3.gridx = 0;
 			gridBagConstraints3.weightx = 0.0;
 			gridBagConstraints3.weighty = 1.0;
-			gridBagConstraints3.gridy = 3;
+			gridBagConstraints3.gridy = 4;
 			jLabel2 = new JLabel();
 			jLabel2.setText("Manual roots:");
 			GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
@@ -274,6 +278,20 @@ public class MainFrame extends JFrame {
 			gridBagConstraints1.gridx = 0;
 			gridBagConstraints1.weighty = 1.0;
 			gridBagConstraints1.gridy = 0;
+			jLabel4 = new JLabel();
+			jLabel4.setText("Exp. Query:");
+			GridBagConstraints gridBagConstraints555 = new GridBagConstraints();
+			gridBagConstraints555.fill = GridBagConstraints.HORIZONTAL;
+			gridBagConstraints555.gridy = 2;
+			gridBagConstraints555.weightx = 1.0;
+			gridBagConstraints555.weighty = 0.0;
+			gridBagConstraints555.insets = new Insets(4, 0, 4, 0);
+			gridBagConstraints555.gridx = 0;
+			GridBagConstraints gridBagConstraints155 = new GridBagConstraints();
+			gridBagConstraints155.fill = GridBagConstraints.HORIZONTAL;
+			gridBagConstraints155.gridx = 1;
+			gridBagConstraints155.weighty = 1.0;
+			gridBagConstraints155.gridy = 2;
 			jLabel = new JLabel();
 			jLabel.setText("Task:");
 			jPanel = new JPanel();
@@ -282,8 +300,10 @@ public class MainFrame extends JFrame {
 			jPanel.add(getTaskField(), gridBagConstraints);
 			jPanel.add(jLabel1, gridBagConstraints2);
 			jPanel.add(jLabel2, gridBagConstraints3);
+			jPanel.add(jLabel4, gridBagConstraints555);
 			jPanel.add(getQueryField(), gridBagConstraints4);
 			jPanel.add(getRootsField(), gridBagConstraints5);
+			jPanel.add(getExpQueryField(), gridBagConstraints155);
 			jPanel.add(getRootsCheck(), gridBagConstraints6);
 			jPanel.add(jLabel3, gridBagConstraints10);
 			jPanel.add(getDeepCombo(), gridBagConstraints11);
@@ -385,6 +405,15 @@ public class MainFrame extends JFrame {
 		return taskField;
 	}
 
+	private JTextField getExpQueryField() {
+		if (expQueryField == null) {
+			expQueryField = new JTextField();
+			expQueryField.setPreferredSize(new Dimension(400, 19));
+			expQueryField.setColumns(20);
+		}
+		return expQueryField;
+	}
+	
 	/**
 	 * This method initializes queryField	
 	 * 	
@@ -669,7 +698,11 @@ public class MainFrame extends JFrame {
 
 					if(controller==null)
 						controller = new Controller();
-					System.out.println("RESULT: "+controller.search(taskField.getText(), queryField.getText(), typeCheck.isSelected() ? TermSearcher.ROCCHIO : TermSearcher.WORDNET));
+					if(!getExpQueryField().getText().equals(""))
+						System.out.println("RESULT EXP: "+controller.search(taskField.getText(), getExpQueryField().getText(), -1));
+					else
+						System.out.println("RESULT: "+controller.search(taskField.getText(), queryField.getText(), typeCheck.isSelected() ? TermSearcher.ROCCHIO : TermSearcher.WORDNET));
+					getExpQueryField().setText(controller.getExpandedQuery().toString());
 					if(browserCheck.isSelected()) {
 						try {
 							htmlPanel.navigate(controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0", typeCheck.isSelected() ? "1" : "0"));
