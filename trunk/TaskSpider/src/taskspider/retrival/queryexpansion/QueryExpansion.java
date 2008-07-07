@@ -400,7 +400,7 @@ public class QueryExpansion
 	            // Create TermQuery and add it to the collection
 	            TermQuery termQuery = new TermQuery( term );
 	            // Calculate and set boost
-	            termQuery.setBoost( (factor*weight)/docsTerms.size() );
+	            termQuery.setBoost( (factor/**weight*/)/docsTerms.size() );
 	            System.out.println("factor: "+factor+", size: "+docsTerms.size()+" res: "+(factor)/docsTerms.size());
 	            terms.add( termQuery );
 	        }
@@ -449,9 +449,10 @@ public class QueryExpansion
     public Vector<TermQuery> combine( Vector<TermQuery> queryTerms, Vector<TermQuery> docsRelTerms, Vector<TermQuery> docsNotRelTerms )
     {
         Vector<TermQuery> terms = new Vector<TermQuery>();
+        Vector<TermQuery> nterms = new Vector<TermQuery>();
         // Add Terms from the docsTerms
         terms.addAll( docsRelTerms );
-        terms.removeAll( docsNotRelTerms );
+        nterms.addAll( docsNotRelTerms ); //Migliora molto la precisione
         // Add Terms from queryTerms: if term already exists just increment its boost
         for ( int i = 0; i < queryTerms.size(); i++ )
         {
@@ -469,6 +470,23 @@ public class QueryExpansion
                 terms.add( qTerm );
             }
         }
+        for ( int i = 0; i < nterms.size(); i++ )
+        {
+            TermQuery qTerm = nterms.elementAt(i);
+            TermQuery term = find( qTerm, terms );
+            // Term already exists update its boost
+            if ( term != null )
+            {
+                float weight = term.getBoost() - qTerm.getBoost();
+                term.setBoost( weight );
+            }
+            // Term does not exist; add it
+//            else
+//            {
+//                terms.add( qTerm );
+//            }
+        }
+        
         
         return terms;
     }
