@@ -3,20 +3,17 @@
  */
 package taskspider.view.gui;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.color.*;
-import java.awt.Color;
 import java.net.MalformedURLException;
 import java.util.StringTokenizer;
 import java.util.Vector;
-import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -26,35 +23,25 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.JScrollBar;
 import javax.swing.JSlider;
 import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.WindowConstants;
-import javax.swing.JScrollBar;
 
-import org.jgraph.JGraph;
-import org.jgraph.event.GraphSelectionEvent;
-import org.jgraph.event.GraphSelectionListener;
-import org.jgraph.graph.DefaultGraphCell;
 import org.lobobrowser.gui.BrowserPanel;
 import org.lobobrowser.main.PlatformInit;
 
 import taskspider.controller.BrowserControl;
 import taskspider.controller.Controller;
-import taskspider.util.debug.Debug;
 import taskspider.retrival.core.TermSearcher;
+import taskspider.util.debug.Debug;
 import taskspider.util.properties.PropertiesReader;
-import edu.uci.ics.jung.visualization.control.*;
-import websphinx.Link;
-
-import org.apache.lucene.document.Document;
-
+import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.algorithms.layout.*;
-import edu.uci.ics.jung.algorithms.layout.util.Relaxer;
+import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
+import edu.uci.ics.jung.visualization.control.ScalingControl;
 
 /**
  * @author avenger
@@ -106,15 +93,13 @@ public class MainFrame extends JFrame {
 
 	private JPanel graphScroll = null;
 	
-	private VisualizationViewer<String,String> graph = null;  //  @jve:decl-index=0:
+	private VisualizationViewer<String,String> graph = null;
 	
 	private Controller controller = null;
 
 	private JButton updateButton = null;
 
 	private JSlider zoomSlider = null;
-
-	private String selectedCell = "";  //  @jve:decl-index=0:
 
 	private JLabel messageLabel = null;
 	
@@ -132,7 +117,6 @@ public class MainFrame extends JFrame {
 	
 	private JTextField expQueryField = null;
 	
-	//private HtmlRendererContext rendererContext = null;
 
 	/**
 	 * This is the default constructor
@@ -193,19 +177,10 @@ public class MainFrame extends JFrame {
 						public void propertyChange(java.beans.PropertyChangeEvent e) {
 							if(e.getNewValue().equals("Pages indexed")) {
 								getGraph(); 
-//								controller.search(queryField.getText());
-//								try {
-//									Thread.sleep(2000);
-//								} catch (InterruptedException e2) {
-//									// TODO Auto-generated catch block
-//									e2.printStackTrace();
-//								}
-								//controller.getGroupResult();
 								if(browserCheck.isSelected()) {
 									try {
 										htmlPanel.navigate(controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0", typeCheck.isSelected() ? "1" : "0"));
 									} catch (MalformedURLException e1) {
-										// TODO Auto-generated catch block
 										e1.printStackTrace();
 									}
 								}
@@ -520,39 +495,10 @@ public class MainFrame extends JFrame {
 	private BrowserPanel getHtmlPanel() {
 		if(htmlPanel == null) {
 			try {
-//				String uri = "http://lobobrowser.org/java-browser.jsp";
-//				URL url = new URL(uri);
-//				URLConnection connection = url.openConnection();
-//				InputStream in = connection.getInputStream();
-//				Reader reader = new InputStreamReader(in);
-//
-//				htmlPanel = new HtmlPanel();
-//				rendererContext = new LocalHtmlRendererContext(htmlPanel);
-//				//SimpleHtmlRendererContext rendererContext = new SimpleHtmlRendererContext(htmlPanel);
-//				htmlPanel.setPreferredSize(new Dimension(800, 600));
-//				htmlPanel.setBackground(Color.black);
-//				htmlPanel.setBorder(BorderFactory.createTitledBorder(new EtchedBorder(EtchedBorder.RAISED), "Embedded browser"));
-//				htmlPanel.setLayout(new BoxLayout(getJPanel3(), BoxLayout.Y_AXIS));
-//				htmlPanel.add(new JButton(), null);
-//				
-//				// InputSourceImpl constructor with URI recommended
-//				// so the renderer can resolve page component URLs.
-//				InputSource is = new InputSourceImpl(reader, uri);
-//				DocumentBuilderImpl builder = new DocumentBuilderImpl(rendererContext.getUserAgentContext(), rendererContext);
-//				Document document = builder.parse(is);
-//				in.close();
-//
-//				// Set the document in the HtmlPanel. This
-//				// is what lets the document render.
-//				htmlPanel.setDocument(document, rendererContext);
-				
 				htmlPanel = new BrowserPanel();
-				
-//				htmlPanel.navigate("http://www.google.com");
 
 				htmlPanel.setEnabled(true);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -647,25 +593,8 @@ public class MainFrame extends JFrame {
 	private JPanel getGraphScroll() {
 		if (graphScroll == null) { 
 			graphScroll = new JPanel();
-			
+			graphScroll.setBorder(BorderFactory.createEtchedBorder());
 			graphScroll.setLayout(new GridBagLayout());
-			
-			
-			
-//			GridBagConstraints gridBagConstraints13 = new GridBagConstraints();
-//			gridBagConstraints13.weightx = 1.0;
-//			GridBagConstraints gridBagConstraints9 = new GridBagConstraints();
-//			gridBagConstraints9.weightx = 1.0;
-//			GridBagConstraints gridBagConstraints7 = new GridBagConstraints();
-//			gridBagConstraints7.gridx = -1;
-//			gridBagConstraints7.anchor = GridBagConstraints.CENTER;
-//			gridBagConstraints7.weightx = 1.0;
-//			gridBagConstraints7.gridy = -1;
-//			jPanel4 = new JPanel();
-//			jPanel4.setLayout(new GridBagLayout());
-//			jPanel4.add(getSearchButton(), gridBagConstraints7);
-//			jPanel4.add(getCancelButton(), gridBagConstraints9);
-//			jPanel4.add(getJButton(), gridBagConstraints13);
 		}
 		return graphScroll;
 	}
@@ -681,20 +610,6 @@ public class MainFrame extends JFrame {
 			updateButton.setText("Search");
 			updateButton.addActionListener(new java.awt.event.ActionListener() {
 				public void actionPerformed(java.awt.event.ActionEvent e) {
-					//getGraph();
-					
-//					graph = null;
-//					getGraph();
-					
-//					Layout<String, String> layout = graph.getGraphLayout();
-//					layout.initialize();
-//					Relaxer relaxer = graph.getModel().getRelaxer();
-//					if(relaxer != null) {
-////					if(layout instanceof IterativeContext) {
-//						relaxer.stop();
-//						relaxer.prerelax();
-//						relaxer.relax();
-//					}
 
 					if(controller==null)
 						controller = new Controller();
@@ -707,7 +622,6 @@ public class MainFrame extends JFrame {
 						try {
 							htmlPanel.navigate(controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0", typeCheck.isSelected() ? "1" : "0"));
 						} catch (MalformedURLException e1) {
-							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 					}
@@ -715,13 +629,6 @@ public class MainFrame extends JFrame {
 						BrowserControl.displayURL("", controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0", typeCheck.isSelected() ? "1" : "0"));
 					}
 					
-//					controller.search(queryField.getText());
-//					Vector<Document> docs = controller.getGroupResult();
-//					for(int i=0; i<docs.size(); i++) {
-//						if(docs.get(i)==null)
-//							continue;
-//						System.out.println("docs["+i+"]: "+docs.get(i).get("url"));
-//					}
 				}
 			});
 		}
@@ -731,12 +638,10 @@ public class MainFrame extends JFrame {
 	private VisualizationViewer<String,String> getGraph() {
 		if(graph==null) {
 			if(graphScroll!=null && controller.getWebGraph()!=null) {
-//				controller.setScale(((double)zoomSlider.getValue())/10);
 				graph = controller.getWebGraph().getVisualization();
 				controller.getWebGraph().setBrowserCheck(browserCheck.isSelected());
 				controller.getWebGraph().setHtmlPanel(htmlPanel);
 				GraphZoomScrollPane scroll = new GraphZoomScrollPane(graph);
-//				graphScroll.setViewportView(graph);
 				
 				GridBagConstraints gridBagConstraints13 = new GridBagConstraints();
 				gridBagConstraints13.weightx = 1.0;
@@ -754,70 +659,11 @@ public class MainFrame extends JFrame {
 				bar = scroll.getVerticalScrollBar();
 				bar.setValue(bar.getMaximum()/2);
 				
-				//graphScroll.add(graph);
 				Debug.println("Graph updated", 1);
 			}
-//			graph.addGraphSelectionListener(new GraphSelectionListener() {
-//				public void valueChanged(GraphSelectionEvent e) {
-//
-//				}
-//			});
-			
-//			graph.addMouseListener(new java.awt.event.MouseListener() {
-//				public void mouseClicked(MouseEvent e) {
-//					if(e.getClickCount()==2) {
-//						DefaultGraphCell cell = (DefaultGraphCell)graph.getSelectionCellAt(e.getPoint());
-//						if(cell!=null) {
-//							Debug.println("Selected cell is: "+(selectedCell=cell.toString()),1);
-//							if(browserCheck.isSelected()) {
-//								try {
-//									htmlPanel.navigate(selectedCell);
-//								} catch (MalformedURLException e1) {
-//									e1.printStackTrace();
-//								}
-//							}
-//							else
-//								BrowserControl.displayURL("", selectedCell);
-//						}
-//						else
-//							selectedCell = "";
-//						
-//					}
-//			    }
-//				
-//			    public void mousePressed(MouseEvent e) {   
-//			    }
-//			    
-//			    public void mouseReleased(MouseEvent e) {
-//			    }
-//			    
-//			    public void mouseEntered(MouseEvent e) {  
-//			    }
-//			    
-//			    public void mouseExited(MouseEvent e) {  
-//			    }
-//			});
-//			
-//			graph.addMouseWheelListener(new java.awt.event.MouseWheelListener() {
-//				public void mouseWheelMoved(MouseWheelEvent e) {
-//					Debug.println("Wheel: "+e.getWheelRotation()+", SCALE: "+graph.getScale(), 1);
-//					if(e.getWheelRotation()<0) {
-//						graph.setScale(graph.getScale()+0.1);
-//						zoomSlider.setValue((int)(graph.getScale()*10));
-//					}
-//					else {
-//						graph.setScale(graph.getScale()-0.1);
-//						zoomSlider.setValue((int)(graph.getScale()*10));
-//					}
-//					graphScroll.setViewportView(graph);
-//					
-//				}
-//			});
 
 		}
 		else {
-//			controller.setScale(((double)zoomSlider.getValue())/10);
-//			graphScroll.setViewportView(graph);
 			Debug.println("Graph updated", 1);
 		}
 		return graph;

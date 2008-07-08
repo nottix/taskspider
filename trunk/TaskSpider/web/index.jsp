@@ -3,13 +3,13 @@
 <%@ page import = "org.apache.lucene.document.*" %>
 <%@ page import = "taskspider.bean.TaskBean" %>
 
-
 <%
 String query;
+//out.println("do: "+TaskBean.getArg("do", request.getQueryString()));
+//out.println("type: "+TaskBean.getArg("type", request.getQueryString()));
 if((query=request.getQueryString())!=null && TaskBean.getArg("index", request.getQueryString()).equals("0") && TaskBean.getArg("do", request.getQueryString())!=null && TaskBean.getArg("type", request.getQueryString())!=null) {
 	//out.println("SIZE: "+TaskBean.doSearch( TaskBean.getArg("task", query), TaskBean.getArg("query", query), TaskBean.getArg("do", request.getQueryString()).equals("1") ));
-	out.println("redo: "+TaskBean.getArg("type", request.getQueryString()));
-	TaskBean.doSearch( TaskBean.getArg("task", query), TaskBean.getArg("query", query), TaskBean.getArg("type", request.getQueryString()), TaskBean.getArg("type", request.getQueryString()) );
+	TaskBean.doSearch( TaskBean.getArg("task", query), TaskBean.getArg("query", query), TaskBean.getArg("do", request.getQueryString()), TaskBean.getArg("type", request.getQueryString()) );
 	
 	//Thread.sleep(1000);
 }
@@ -148,7 +148,7 @@ else if(request.getParameter("Submit")!=null) {
   </tr>
 
 </table>
-<div align="center" class="field">Number of matched: <%=TaskBean.getTotal()%></div>
+<div align="center" class="field">Number of matches: <%=TaskBean.getTotal()%></div>
 <div align="center" class="footer">TaskSpider - MGRI 2007/2008 - Notargiacomo Simone & Schipani Giuseppe </div>
 </body>
 </html>

@@ -5,32 +5,22 @@ package taskspider.retrival.core;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.io.*;
 
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
-import org.apache.lucene.search.Searcher;
 import org.apache.lucene.search.Similarity;
-import org.apache.lucene.search.WildcardQuery;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
 import taskspider.retrival.queryexpansion.QueryExpansion;
-import taskspider.retrival.wordnet.*;
+import taskspider.retrival.wordnet.SynExpand;
 import taskspider.util.debug.Debug;
 import taskspider.util.properties.PropertiesReader;
 
@@ -100,11 +90,7 @@ public class TermSearcher {
 			else {
 				Debug.println("Doesn't exist", 1);
 			}
-		} catch (CorruptIndexException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return 0;
@@ -118,13 +104,12 @@ public class TermSearcher {
 		try {
 			isearcher.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
 	public Query expandQuery(Query query, String queryString, Hits hits, IndexSearcher searcher, StandardAnalyzer analyzer, int type) {
-		if(type==this.WORDNET) {
+		if(type==TermSearcher.WORDNET) {
 			try {
 				String wnIndexPath = PropertiesReader.getProperty("wordnetIndexPath");
 				Directory wnIndexDir = FSDirectory.getDirectory(wnIndexPath);
@@ -150,13 +135,12 @@ public class TermSearcher {
 				e.printStackTrace();
 			}
 		}
-		else if(type==this.ROCCHIO) {
+		else if(type==TermSearcher.ROCCHIO) {
 	        try {
 				Similarity similarity = query.getSimilarity( searcher );
 				
 				File file = new File("/home/avenger/Programs/taskspider/conf/config.properties");
 				FileInputStream fis = new FileInputStream(file);
-	//			Properties properties = PropertiesReader.getProperties();
 				Properties properties = new Properties();
 				properties.load(fis);
 	
@@ -164,15 +148,7 @@ public class TermSearcher {
 				QueryExpansion queryExpansion = new QueryExpansion( analyzer, searcher, similarity, properties );
 				Query retQuery = queryExpansion.expandQuery( queryString, hits, properties );
 				return retQuery;
-			} catch (FileNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
-			catch (ParseException e) {
-				// TODO Auto-generated catch block
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
