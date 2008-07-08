@@ -26,31 +26,13 @@ public class BrowserControl
             {
                 cmd = WIN_PATH + " " + WIN_FLAG + " " + path + "\\" + prog;
                 cmd = cmd.replaceAll("/", "\\\\");
-                //System.out.println(cmd);
-                Process p = Runtime.getRuntime().exec(cmd);
+                Runtime.getRuntime().exec(cmd);
             }
             else
             {
                 cmd = UNIX_PATH + " " + prog;
                 cmd = cmd.replaceAll("\\\\", "/");
-                Process p = Runtime.getRuntime().exec(cmd);
-                //System.out.println(cmd);
-//                try
-//                {
-//                    int exitCode = p.exitValue()/*p.waitFor()*/;
-//                    if (exitCode != 0)
-//                    {
-//                        // Se fallito, riavvia il browser
-//                        cmd = UNIX_PATH + " "  + path + "//" + prog;
-//                        p = Runtime.getRuntime().exec(cmd);
-//                    }
-//                }
-//                catch(InterruptedException x)
-//                {
-//                    System.err.println("Error bringing up browser, cmd='" +
-//                                       cmd + "'");
-//                    System.err.println("Caught: " + x);
-//                }
+                Runtime.getRuntime().exec(cmd);
             }
         }
         catch(IOException x)

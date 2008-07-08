@@ -3,16 +3,15 @@
  */
 package taskspider.spider.core;
 
-import taskspider.controller.WebGraph;
-import taskspider.data.document.*;
+import java.util.Hashtable;
+import java.util.Vector;
+
+import org.apache.lucene.document.Document;
+
+import taskspider.data.document.DocsManager;
 import taskspider.util.properties.PropertiesReader;
 import websphinx.Link;
 import websphinx.Page;
-import websphinx.Region;
-import websphinx.Text;
-import java.util.*;
-import org.apache.lucene.document.*;
-import java.util.Hashtable;
 
 /**
  * @author Simone Notargiacomo, Giuseppe Schipani
@@ -23,11 +22,13 @@ public class SpiderExplorer extends Thread {
 	private DocsManager docsManager;
 	private boolean interrupt;
 	private Hashtable<String, Page> pageTable;
+	private int explorerDelay;
 	
 	public SpiderExplorer(Spider spider) {
 		this.spider = spider;
 		docsManager = new DocsManager();
 		pageTable = new Hashtable<String, Page>();
+		explorerDelay = Integer.parseInt(PropertiesReader.getProperty("explorerDelay"));
 		resetInterrupt();
 		this.setDaemon(true);
 		
@@ -49,7 +50,6 @@ public class SpiderExplorer extends Thread {
 		while(!interrupt) {
 			int num=0, out=0;
 			Link[] link = spider.getExploredRoots();
-			//System.out.println("Roots: "+link.length);
 			if(num==spider.getPagesVisited())
 				out++;
 			else
@@ -57,26 +57,16 @@ public class SpiderExplorer extends Thread {
 			
 			if(out>6) {
 				spider.stop();
+				interrupt = true;
 			}
 			else {
 				num = spider.getPagesVisited();
-				//System.out.println("Page: "+num);
 				deepScan(link);
-			/*if(link!=null) {
-				for(int i=0; i<link.length; i++) {
-					Page page = link[i].getPage();
-					if(page!=null) {
-						Link[] link2 = page.getLinks();
-						System.out.println("Link: "+link2[1].toURL()+", size: "+link2.length);
-					}
-					if(link[i].getStatus()==LinkEvent.DOWNLOADED || link[i].getStatus()==LinkEvent.VISITED) {
-						Page page = link[i].getPage();
-						System.out.println("Content: "+page.getContent());
-					}
-					System.out.print(i+", "+link[i].getHost()+", "+link[i].toDescription());
-				}
-				System.out.println();
-			}*/
+			}
+			try {
+				Thread.sleep(explorerDelay);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 		spider.stop();
@@ -94,15 +84,11 @@ public class SpiderExplorer extends Thread {
 				Page page = link[i].getPage();
 				if(page!=null) {
 					docsManager.addDocument(page);
-					if(!pageTable.containsKey(page.getOrigin().toURL()))
+					if(!pageTable.containsKey(page.getOrigin().toURL())) {
 						pageTable.put(page.getOrigin().toURL(), page);
+					}
 					deepScan(page.getLinks());
 				}
-				/*if(link[i].getStatus()==LinkEvent.DOWNLOADED || link[i].getStatus()==LinkEvent.VISITED) {
-					Page page = link[i].getPage();
-					System.out.println("Content: "+page.getContent());
-				}*/
-				//System.out.print(i+", "+link[i].getHost()+", "+link[i].toDescription());
 			}
 		}
 	}

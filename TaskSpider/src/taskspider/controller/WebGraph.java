@@ -3,22 +3,26 @@
  */
 package taskspider.controller;
 
-import org.jgraph.*;
-import org.jgraph.event.*;
-import org.jgraph.graph.*;
-import org.jgraph.plaf.*;
-import org.jgraph.plaf.basic.*;
-import org.jgraph.util.*;
-import java.awt.*;
-import java.awt.geom.*;
-import java.util.Map;
+import java.awt.Color;
+import java.awt.geom.Rectangle2D;
 import java.util.Hashtable;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+
+import org.jgraph.JGraph;
+import org.jgraph.graph.DefaultCellViewFactory;
+import org.jgraph.graph.DefaultEdge;
+import org.jgraph.graph.DefaultGraphCell;
+import org.jgraph.graph.DefaultGraphModel;
+import org.jgraph.graph.GraphConstants;
+import org.jgraph.graph.GraphLayoutCache;
+import org.jgraph.graph.GraphModel;
+
+import taskspider.util.debug.Debug;
 import websphinx.Link;
 import websphinx.Page;
-import websphinx.Region;
-import websphinx.Text;
-import taskspider.util.debug.*;
 
 /**
  * @author avenger
@@ -33,8 +37,6 @@ public class WebGraph {
 	private Hashtable<String, DefaultGraphCell> cellTable;
 	private Hashtable<String, DefaultEdge> edgeTable;
 	private int xCoord, yCoord, inc, counter;
-	
-	private boolean ok = true;
 	
 	public WebGraph() {
 		model = new DefaultGraphModel();
@@ -151,13 +153,8 @@ public class WebGraph {
 	}
 	
 	public int addPage(Page page) {
-		String source, target;
-		
-//		if(ok) {
-//			addNode("test", "test2");
-//			addNode("test2", "test4");
-//		}
-//		ok=false;
+		String source;
+
 		source = page.getOrigin().toURL();
 		Link[] links = page.getLinks();
 		if(links!=null) {

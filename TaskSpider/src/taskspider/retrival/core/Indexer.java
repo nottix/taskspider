@@ -1,24 +1,28 @@
 package taskspider.retrival.core;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.index.*;
+import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.LockObtainFailedException;
 
+import taskspider.spider.core.SpiderExplorer;
+import taskspider.util.debug.Debug;
 import taskspider.util.properties.PropertiesReader;
-import taskspider.util.debug.*;
 import taskspider.view.gui.TaskGraph;
-import taskspider.spider.core.*;
 
 public class Indexer {
 	
@@ -62,38 +66,17 @@ public class Indexer {
 	}
 	
 	private Query genQuery(String taskString) {
-		BooleanQuery booleanQuery = new BooleanQuery();
-		
-//		StringTokenizer tokens = new StringTokenizer(taskString);
-//		String task = "";
-//		while(tokens.hasMoreTokens()) {
-//			task = tokens.nextToken();
-//			WildcardQuery queryUrl = new WildcardQuery(new Term("url", "*"+task+"*"));
-//			booleanQuery.add(queryUrl, BooleanClause.Occur.SHOULD);
-//			WildcardQuery queryTitle = new WildcardQuery(new Term("title", "*"+task+"*"));
-//			booleanQuery.add(queryTitle, BooleanClause.Occur.SHOULD);
-//			WildcardQuery queryKeywords = new WildcardQuery(new Term("keywords", "*"+task+"*"));
-//			booleanQuery.add(queryKeywords, BooleanClause.Occur.SHOULD);
-//			
-//			WildcardQuery queryBody = new WildcardQuery(new Term("body", "*"+task+"*"));
-//			booleanQuery.add(queryBody, BooleanClause.Occur.SHOULD);
-//		}
+		StringTokenizer tokens = new StringTokenizer(taskString);
+		String token;
+		String out = "";
+		while(tokens.hasMoreTokens()) {
+			token = tokens.nextToken(" ");
+			if(token.length()>=3)
+				out += token+" ";
+		}
+		taskString = out;
 		
 		String query = "";
-		
-		StringTokenizer tokens = new StringTokenizer(taskString);
-		String task = "";
-		query += "(";
-		while(tokens.hasMoreTokens()) {
-			task = tokens.nextToken();
-			query += "url:"+task+"*";
-			if(tokens.hasMoreTokens())
-				query += " AND ";
-			
-//			WildcardQuery queryUrl = new WildcardQuery(new Term("url", "*"+task+"*"));
-//			booleanQuery.add(queryUrl, BooleanClause.Occur.SHOULD);
-		}
-		query += ") OR ";
 		
 		tokens = new StringTokenizer(taskString);
 		task = "";
@@ -103,9 +86,6 @@ public class Indexer {
 			query += "title:"+task+"*";
 			if(tokens.hasMoreTokens())
 				query += " AND ";
-			
-//			WildcardQuery queryTitle = new WildcardQuery(new Term("title", "*"+task+"*"));
-//			booleanQuery.add(queryTitle, BooleanClause.Occur.SHOULD);
 		}
 		query += ") OR ";
 		
@@ -117,9 +97,6 @@ public class Indexer {
 			query += "keywords:"+task;
 			if(tokens.hasMoreTokens())
 				query += " AND ";
-			
-//			WildcardQuery queryKeywords = new WildcardQuery(new Term("keywords", "*"+task+"*"));
-//			booleanQuery.add(queryKeywords, BooleanClause.Occur.SHOULD);
 		}
 		query += ") OR ";
 			
@@ -131,9 +108,6 @@ public class Indexer {
 			query += "body:"+task;
 			if(tokens.hasMoreTokens())
 				query += " AND ";
-			
-//			WildcardQuery queryBody = new WildcardQuery(new Term("body", "*"+task+"*"));
-//			booleanQuery.add(queryBody, BooleanClause.Occur.SHOULD);
 		}
 		query += ")";
 		
@@ -145,18 +119,12 @@ public class Indexer {
 			e.printStackTrace();
 		}
 		
-//		WildcardQuery booleanQuery = new WildcardQuery(new Term("url", "*"+taskString+"*"));
-		
 		return ret;
 	}
 	
 	private int search(String queryString, String field) {
 		try {
 			isearcher = new IndexSearcher(indexTempDir);
-			
-//			StandardAnalyzer analyzer = new StandardAnalyzer();
-//			QueryParser parser = new QueryParser("body", analyzer);
-//			Query query = parser.parse(queryString);
 			
 			result = isearcher.search(genQuery(queryString));
 			Debug.println("Query: "+queryString+", Expanded: "+genQuery(queryString).toString(), 1);
@@ -171,27 +139,14 @@ public class Indexer {
 	
 	public int indexDocs(Vector<Document> docs, int start, int end) {
 		try {
-			//if(!IndexReader.indexExists(indexTempPath)) {
-				writerTemp = new IndexWriter(indexTempDir, new StandardAnalyzer(), true);
-				Debug.println("Indice temp creato", 2);
-			//}
-			//else {
-			//	Debug.println("Indice temp esistente", 2);
-			//	writerTemp = new IndexWriter(indexTempDir, new StandardAnalyzer(), false);
-			//}
-			
-			//writerTemp = new IndexWriter(indexTempDir, new StandardAnalyzer(), true);
+			writerTemp = new IndexWriter(indexTempDir, new StandardAnalyzer(), true);
+			Debug.println("Indice temp creato", 2);
 			for(int i=start; i<end; i++) {
-				//System.out.println("URL: "+docs.get(i).get("url"));
-				
-//				if(!isDocPresentTemp(docs.get(i))) {
-//					Debug.println("Doc non presente: "+docs.get(i), 1);
-					writerTemp.addDocument(docs.get(i));
-//				}
+				writerTemp.addDocument(docs.get(i));
 			}
 			writerTemp.docCount();
 			writerTemp.close();
-			
+
 			int ret = updateIndex();
 			//indexWriter.optimize(); se non ci sono più documenti da aggiungere
 			return ret;
@@ -277,7 +232,6 @@ public class Indexer {
 	public int getDocument() {
 		try {
 			IndexReader indexReader = IndexReader.open(indexDir);
-			//System.out.println("READER: "+indexReader.numDocs());
 			for(int i=0; i<indexReader.numDocs(); i++) {
 				System.out.println("READER: "+indexReader.document(i));
 			}

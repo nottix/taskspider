@@ -3,10 +3,11 @@
  */
 package taskspider.spider.core;
 
-import java.net.MalformedURLException;
-import java.util.*;
-import com.google.soap.search.*;
-import websphinx.*;
+import java.util.Vector;
+
+import com.google.soap.search.GoogleSearch;
+import com.google.soap.search.GoogleSearchResult;
+import com.google.soap.search.GoogleSearchResultElement;
 
 /**
  * @author Simone Notargiacomo, Giuseppe Schipani

@@ -4,28 +4,26 @@
 package taskspider.controller;
 
 import java.io.IOException;
-import org.apache.lucene.search.Query;
-import java.net.MalformedURLException;
-import java.util.Vector;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.swing.JLabel;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.Query;
 
 import taskspider.retrival.core.Indexer;
 import taskspider.retrival.core.TermSearcher;
 import taskspider.retrival.wordnet.Syns2Index;
+import taskspider.spider.core.RootsSites;
 import taskspider.spider.core.Spider;
 import taskspider.spider.core.SpiderExplorer;
-import taskspider.spider.core.RootsSites;
-import org.apache.lucene.search.Hits;
 import taskspider.util.debug.Debug;
-import taskspider.util.properties.*;
+import taskspider.util.properties.PropertiesReader;
 import taskspider.view.gui.TaskGraph;
-import websphinx.Link;
 
 /**
  * @author Simone Notargiacomo, Giuseppe Schipani
@@ -44,6 +42,7 @@ public class Controller extends Thread{
 	private boolean interrupt;
 	private JLabel messageLabel = null;
 	private String jspUrl;
+	private int indexerDelay;
 	
 	public Controller() {
 		links = null;
@@ -52,6 +51,7 @@ public class Controller extends Thread{
 		task = null;
 		searcher = null;
 		jspUrl = PropertiesReader.getProperty("jspUrl");
+		indexerDelay = Integer.parseInt(PropertiesReader.getProperty("indexerDelay"));
 		this.setDaemon(true);
 	}
 	
@@ -118,11 +118,7 @@ public class Controller extends Thread{
 				aux=0;
 			}
 			return result;
-		} catch (CorruptIndexException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
@@ -194,7 +190,7 @@ public class Controller extends Thread{
 					retry=0;
 				System.out.println("start: "+start+", end: "+end);
 				ret = indexer.indexDocs(spiderExplorer.getDocs(), start, end);
-				Thread.sleep(2000);
+				Thread.sleep(indexerDelay);
 				start = end;
 				end = docs.size();
 				if(ret!=0) {

@@ -1,17 +1,16 @@
-// Java Document
 package taskspider.bean;
 
-import java.util.*;
 import java.io.IOException;
-import java.lang.*;
-import org.apache.lucene.document.*;
-import org.apache.lucene.index.CorruptIndexException;
+import java.util.Vector;
 
-import taskspider.controller.*;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.CorruptIndexException;
 import org.apache.lucene.search.Hits;
 
+import taskspider.controller.Controller;
+
 public class TaskBean{
-	
+
 	private static Vector<Document> results = null;
 	private static Hits hits = null;
 	private static Controller controller = null;
@@ -21,27 +20,20 @@ public class TaskBean{
 	//private static int first = 0; 
 	private static int start, end, size;
 	private static int total = 0;
-	
+
 	//costruttore,  inutile ma serve a tomcat, altrimenti crea errore
 	public TaskBean(){}
-	
+
 	public static int getTotal() {
 		return total;
 	}
-	
+
 	/*
 	 * Do in input i parametri task e query, Qui dovresti fare l'operazione de
 	 * taskspider e poi riempirmi due vettori.
 	 */
 	public static String doSearch(String taskSearch, String querySearch, String redo_str, String typeStr){
 		int type = Integer.parseInt(typeStr);
-//		if(controller==null)
-//			controller = new Controller();
-//		
-//		if(taskSearch.equals(task) && querySearch.equals(query) && !redo) {
-//			return String.valueOf(total);
-//		}
-		//first = 0;
 		int ret;
 		boolean redo;
 		if(redo_str.indexOf("1") >= 0)
@@ -58,29 +50,19 @@ public class TaskBean{
 					taskSearch = taskSearch.replaceAll(" ", "%20");
 				task = taskSearch;
 				query = querySearch;
-				System.out.println("OOOOOOOOOOOOOOK: "+taskSearch);
-//				try {
-//					Thread.sleep(2000);
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+
 				return String.valueOf(ret);
-				//return "1";
 			}
 		}
 		return "0";
-		
-		
+
+
 	}
-	
-	/*
-	 * Non ricordo a che ci serviva....
-	 */
+
 	public static void doCancel(){
 		controller.interrupt();
 	}
-	
+
 	/*
 	 * Con questo prendo un vettore di risultati e lo stampo a centro 
 	 * della pagina. Non paginiamo, li stampiamo tutti in sequenza.
@@ -113,24 +95,22 @@ public class TaskBean{
 		else {
 			start = index*4;
 			end = start+4;
-			//if(end<=hits.length()) {
-				results = new Vector<Document>();
-				try {
-					for(int i=start; i<end && i<hits.length(); i++) {
-						if(hits.doc(i)!=null)
-							results.add(hits.doc(i));
-					}
-				} catch (CorruptIndexException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
+			results = new Vector<Document>();
+			try {
+				for(int i=start; i<end && i<hits.length(); i++) {
+					if(hits.doc(i)!=null)
+						results.add(hits.doc(i));
 				}
-			//}
+			} catch (CorruptIndexException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-		
+
 		return results;
 	} 
-	
+
 	/*
 	 * Questo mi da i documenti per l'albero, purtoppo non lo posso provare
 	 * perch non riesco ad avere il sitema funzionante sul server tomcat
@@ -143,11 +123,11 @@ public class TaskBean{
 		}
 		return (Vector<Document>)controller.getGroupResult();
 	} 
-	
+
 	public static String getArg(String name, String queryString) {
 		System.out.println("QUERYSTRING: "+queryString+", name: "+name);
 		qString = queryString;
-		
+
 		int start = queryString.indexOf(name);
 		if(start<0)
 			return null;
@@ -155,12 +135,12 @@ public class TaskBean{
 		int end = queryString.indexOf("&", start);
 		if(end<0)
 			end = queryString.length()-1;
-		
+
 		System.out.println("NAME: "+queryString.substring(start, end));
-			
+
 		return queryString.substring(start, end);
 	}
-	
+
 	public static String printTail(String indexString) {
 		int index = Integer.parseInt(indexString);
 		String ret = "";

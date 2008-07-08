@@ -29,7 +29,6 @@ public class Spider {
 				crawler.addRoot(new Link(links.get(i)));
 			}
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
