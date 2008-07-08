@@ -38,6 +38,7 @@ public class TermSearcher {
 	private Hits result;
 	private String task;
 	private Query expandedQuery;
+	private static String propPath = "/home/avenger/Programs/taskspider/conf/config.properties";
 	
 	public TermSearcher(String filename) {
 		try {
@@ -139,7 +140,7 @@ public class TermSearcher {
 	        try {
 				Similarity similarity = query.getSimilarity( searcher );
 				
-				File file = new File("/home/avenger/Programs/taskspider/conf/config.properties");
+				File file = new File(propPath);
 				FileInputStream fis = new FileInputStream(file);
 				Properties properties = new Properties();
 				properties.load(fis);
