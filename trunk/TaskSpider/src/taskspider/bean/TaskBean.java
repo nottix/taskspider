@@ -2,6 +2,7 @@ package taskspider.bean;
 
 import java.io.IOException;
 import java.util.Vector;
+import taskspider.util.properties.*;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
@@ -20,6 +21,7 @@ public class TaskBean{
 	//private static int first = 0; 
 	private static int start, end, size;
 	private static int total = 0;
+	private static String jspUrl = PropertiesReader.getProperty("jspUrl");
 
 	//costruttore,  inutile ma serve a tomcat, altrimenti crea errore
 	public TaskBean(){}
@@ -148,7 +150,8 @@ public class TaskBean{
 			if(index==i)
 				ret += "<a class=\"description\"> "+(i+1)+" </a>";
 			else {
-				ret += "<a href=\"http://localhost:8180/taskspider/index.jsp?task="+task+"&query="+query+"&do=0&frame="+(getArg("frame", qString).equals("1") ? "1" : "0")+"&index="+i+"&\" class=\"description\"> "+(i+1)+" </a>";
+				
+				ret += "<a href=\""+jspUrl+"?task="+task+"&query="+query+"&do=0&frame="+(getArg("frame", qString).equals("1") ? "1" : "0")+"&index="+i+"&\" class=\"description\"> "+(i+1)+" </a>";
 			}
 		}
 		return ret;
