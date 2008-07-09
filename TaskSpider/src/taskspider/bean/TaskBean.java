@@ -19,7 +19,7 @@ public class TaskBean{
 	private static String query = "";
 	private static String qString = "";
 	//private static int first = 0; 
-	private static int start, end, size;
+	private static int start, end, size=0;
 	private static int total = 0;
 	private static String jspUrl = PropertiesReader.getProperty("jspUrl");
 
@@ -145,8 +145,10 @@ public class TaskBean{
 			if(index==i)
 				ret += "<a class=\"description\"> "+(i+1)+" </a>";
 			else {
-				
-				ret += "<a href=\""+jspUrl+"?task="+task+"&query="+query+"&do=0&frame="+(getArg("frame", qString).equals("1") ? "1" : "0")+"&index="+i+"&\" class=\"description\"> "+(i+1)+" </a>";
+				if(qString!=null && !qString.equals(""))
+					ret += "<a href=\""+jspUrl+"?task="+task+"&query="+query+"&do=0&frame="+(getArg("frame", qString).equals("1") ? "1" : "0")+"&index="+i+"&\" class=\"description\"> "+(i+1)+" </a>";
+				else
+					ret += "<a href=\""+jspUrl+"?task="+task+"&query="+query+"&do=0&frame=1&index="+i+"&\" class=\"description\"> "+(i+1)+" </a>";
 			}
 		}
 		return ret;
