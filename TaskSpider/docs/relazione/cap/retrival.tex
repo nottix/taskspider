@@ -64,9 +64,14 @@ Debug.println("Search with expanded query hits: "+result.length(), 1);
 Per evitare di incorrere in problemi come quelli appena citati si è realizzato un altro modulo di espansione query utilizzando il sistema di \var{Pseudo-relevance feedback Rocchio}. Tale metodo funziona nel seguente modo:
 \begin{enumerate}
 \item si prende la query desiderata dall'utente e si effettua la ricerca nell'indice;
-\item con i risultati ottenuti si effettua lo pseudo-relevance feedback considerando rilevanti i primi 10 documenti;
-\item si prendono i termini dei documenti rilevanti e si pesano secondo l'algoritmo;
-\item si aggiungono i termini pesati alla precedente query;
+\item con i risultati ottenuti si effettua lo pseudo-relevance feedback considerando rilevanti i primi N documenti ed irrilevanti gli ultimi M;
+\item si prendono i termini dei documenti rilevanti e si aggiungono alla query originale;
+\item si sottraggono i termini dei documenti non rilevanti;
 \item viene rieseguita una nuova ricerca con la nuova query.
 \end{enumerate}
-Con tale metodo è risultato un aumento della precisione nei documenti ritrovati, infatti a differenza del metodo Wordnet in questo caso è molto più difficile incorrere in ambiguità delle parole. Un punto a favore di Wordnet può andare sotto l'aspetto della espressività della query, questo perchè con il sistema \var{Rocchio} realizzato non possono essere fatte espansioni di query che specificano il campo (``URL'', ``title'' ecc.) del termine. Per evitare un'elevata complessità computazionale è stata impostata una espansione che considera soltanto il campo ``body''. Tale vincolo ha senso anche sotto altri aspetti, come il fatto che gran parte del contenuto informativo di una pagina web è proprio nel ``body''.
+La formula utilizzata per l'espansione è la seguente:
+$$
+\overrightarrow{q}_{m} = \alpha\overrightarrow{q} + \dfrac{\beta}{\vert D_{r}\vert}\sum_{\forall\overrightarrow{d_{j}}\in D_{r}}\overrightarrow{d_{j}} - \dfrac{\gamma}{\vert D_{n}\vert}\sum_{\forall\overrightarrow{d_{j}}\in D_{n}}\overrightarrow{d_{j}}
+$$
+In precedenza è stata implementata una variante di \var{Rocchio} aggiungendo ai nuovi termini della query il loro peso \var{tf-idf}; tale funzionalità è stata in seguito rimossa per attenersi alla formula originale.
+Il metodo originale ha consentito un aumento della precisione nei documenti ritrovati, infatti a differenza del metodo \var{Wordnet} è molto più difficile incorrere in ambiguità delle parole. Un punto a favore di \var{Wordnet} può andare sotto l'aspetto della espressività della query, questo perchè con il sistema \var{Rocchio} realizzato non possono essere fatte espansioni di query che specificano il campo (``URL'', ``title'' ecc.) del termine. Per evitare un'elevata complessità computazionale è stata impostata una espansione che considera soltanto il campo ``body''. Tale vincolo ha senso anche sotto altri aspetti, come il fatto che gran parte del contenuto informativo di una pagina web è proprio nel ``body''.

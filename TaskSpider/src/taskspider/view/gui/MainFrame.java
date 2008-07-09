@@ -179,13 +179,13 @@ public class MainFrame extends JFrame {
 								getGraph(); 
 								if(browserCheck.isSelected()) {
 									try {
-										htmlPanel.navigate(controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0", typeCheck.isSelected() ? "1" : "0"));
+										htmlPanel.navigate(controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0", typeCheck.isSelected() ? "1" : "0", "normal"));
 									} catch (MalformedURLException e1) {
 										e1.printStackTrace();
 									}
 								}
 								else {
-									BrowserControl.displayURL("", controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0", typeCheck.isSelected() ? "1" : "0"));
+									BrowserControl.displayURL("", controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0", typeCheck.isSelected() ? "1" : "0", "normal"));
 								}
 							}
 						}
@@ -617,17 +617,25 @@ public class MainFrame extends JFrame {
 						System.out.println("RESULT EXP: "+controller.search(taskField.getText(), getExpQueryField().getText(), -1));
 					else
 						System.out.println("RESULT: "+controller.search(taskField.getText(), queryField.getText(), typeCheck.isSelected() ? TermSearcher.ROCCHIO : TermSearcher.WORDNET));
-					getExpQueryField().setText(controller.getExpandedQuery().toString());
+					
 					if(browserCheck.isSelected()) {
 						try {
-							htmlPanel.navigate(controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0", typeCheck.isSelected() ? "1" : "0"));
+							if(!getExpQueryField().getText().equals(""))
+								htmlPanel.navigate(controller.getQueryString(taskField.getText(), getExpQueryField().getText(), frameCheck.isSelected() ? "1" : "0", typeCheck.isSelected() ? "1" : "0", "expanded"));
+							else
+								htmlPanel.navigate(controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0", typeCheck.isSelected() ? "1" : "0", "normal"));
 						} catch (MalformedURLException e1) {
 							e1.printStackTrace();
 						}
 					}
 					else {
-						BrowserControl.displayURL("", controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0", typeCheck.isSelected() ? "1" : "0"));
+						if(!getExpQueryField().getText().equals(""))
+							BrowserControl.displayURL("", controller.getQueryString(taskField.getText(), getExpQueryField().getText(), frameCheck.isSelected() ? "1" : "0", typeCheck.isSelected() ? "1" : "0", "expanded"));
+						else
+							BrowserControl.displayURL("", controller.getQueryString(taskField.getText(), queryField.getText(), frameCheck.isSelected() ? "1" : "0", typeCheck.isSelected() ? "1" : "0", "normal"));
 					}
+					
+					getExpQueryField().setText(controller.getExpandedQuery().toString());
 					
 				}
 			});
