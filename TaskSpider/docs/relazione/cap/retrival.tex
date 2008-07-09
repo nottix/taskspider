@@ -22,13 +22,13 @@ La ricerca è un altro tassello fondamentale per il raggiungimento degli obietti
 Il primo tipo di ricerca genera una query a partire dal task richiesto, in particolare vengono espletati i seguenti passi:
 \begin{enumerate}
 \item si prende il task inserito dall'utente, che potrebbe essere ``Università Tor Vergata'', e lo si divide in token (Università, Tor, Vergata);
-\item per ogni campo (``URL'', ``keywords'', ``title'', ``body'') si prepara una query del seguente tipo:
+\item per ogni campo (``keywords'', ``title'', ``body'') si prepara una query del seguente tipo:
 \begin{center}
-\texttt{URL:Università AND URL:Tor AND URL:Vergata}
+\texttt{title:Università AND title:Tor AND title:Vergata}
 \end{center}
 \item in seguito si mettono in OR tutte le query preparate per ottenere:
 \begin{center}
-\texttt{(URL:Università AND URL:Tor AND URL:Vergata) OR (...) OR (...) OR (...)}
+\texttt{(title:Università AND title:Tor AND title:Vergata) OR (...) OR (...)}
 \end{center}
 \end{enumerate}
 Formulando tale query non si fa altro che ricercare nell'indice uno o più documenti con i parametri richiesti. Si deciso di imporre il vincolo che l'intero task deve essere presente in almeno un campo, questo per rendere più rilevanti i risultati della ricerca. In principio si erano impostati altri tipi di vincoli, in particolare era sufficiente che un solo token fosse presente in un qualsiasi campo per rendere il documento rilevante; il che rendeva un set di risultati molto scadenti.
