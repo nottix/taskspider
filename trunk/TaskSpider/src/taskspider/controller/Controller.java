@@ -55,10 +55,10 @@ public class Controller extends Thread{
 		this.setDaemon(true);
 	}
 	
-	public String getQueryString(String task, String query, String frame, String type) {
+	public String getQueryString(String task, String query, String frame, String type, String exp) {
 		task = task.replaceAll(" ", "%20");
 		query = query.replaceAll(" ", "%20");
-		return this.jspUrl+"?task="+task+"&query="+query+"&frame="+frame+"&index=0&do=1&type="+type+"&";
+		return this.jspUrl+"?task="+task+"&query="+query+"&frame="+frame+"&index=0&do=1&type="+type+"&exp="+exp+"&";
 	}
 	
 	public void setMessage(JLabel message) {

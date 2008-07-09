@@ -31,10 +31,9 @@ public class TaskBean{
 	}
 
 	/*
-	 * Do in input i parametri task e query, Qui dovresti fare l'operazione de
-	 * taskspider e poi riempirmi due vettori.
+	 * Da' in input i parametri task e query.
 	 */
-	public static String doSearch(String taskSearch, String querySearch, String redo_str, String typeStr){
+	public static String doSearch(String taskSearch, String querySearch, String redo_str, String typeStr, String exp){
 		int type = Integer.parseInt(typeStr);
 		int ret;
 		boolean redo;
@@ -46,7 +45,9 @@ public class TaskBean{
 			controller = new Controller();
 			if(taskSearch.indexOf("%20")>0)
 				taskSearch = taskSearch.replaceAll("%20", " ");
-			if((ret=controller.search(taskSearch, querySearch, type))>0) {
+			if(exp.equals("expanded"))
+				type=-1;
+			if((ret=controller.search(taskSearch, querySearch, type))>=0) {
 				total = ret;
 				if(taskSearch.indexOf(" ")>0)
 					taskSearch = taskSearch.replaceAll(" ", "%20");
@@ -65,15 +66,12 @@ public class TaskBean{
 		controller.interrupt();
 	}
 
-	/*
-	 * Con questo prendo un vettore di risultati e lo stampo a centro 
-	 * della pagina. Non paginiamo, li stampiamo tutti in sequenza.
-	 */
 	public static Vector<Document> getResults(String indexString){
 		int index = Integer.parseInt(indexString);
+		results = new Vector<Document>();
 		if(controller==null) {
 			System.out.println("NULL");
-			return new Vector<Document>();
+			return results;
 		}
 		if(index==0) {
 			System.out.println("here");
@@ -97,7 +95,6 @@ public class TaskBean{
 		else {
 			start = index*4;
 			end = start+4;
-			results = new Vector<Document>();
 			try {
 				for(int i=start; i<end && i<hits.length(); i++) {
 					if(hits.doc(i)!=null)
@@ -113,10 +110,6 @@ public class TaskBean{
 		return results;
 	} 
 
-	/*
-	 * Questo mi da i documenti per l'albero, purtoppo non lo posso provare
-	 * perch non riesco ad avere il sitema funzionante sul server tomcat
-	 */
 	public static Vector<Document> getTree(){
 		if(controller==null || total==0) {
 			Vector<Document> docs = new Vector<Document>();
@@ -144,6 +137,8 @@ public class TaskBean{
 	}
 
 	public static String printTail(String indexString) {
+		if(indexString==null)
+			return "";
 		int index = Integer.parseInt(indexString);
 		String ret = "";
 		for(int i=0; i<size; i++) {
