@@ -55,7 +55,7 @@ public class SpiderExplorer extends Thread {
 			else
 				out=0;
 			
-			if(out>6) {
+			if(out>10) {
 				spider.stop();
 				interrupt = true;
 			}
