@@ -183,7 +183,7 @@ public class Controller extends Thread{
 			int end = docs.size();
 			int ret = indexer.indexDocs(docs, start, end);
 			int retry=0;
-			while((start!=end || retry<4) && !interrupt) {
+			while((start!=end || retry<10) && !interrupt) {
 				if(start==end)
 					retry++;
 				else

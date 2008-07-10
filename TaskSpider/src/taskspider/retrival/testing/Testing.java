@@ -116,7 +116,12 @@ public class Testing {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		addDocs();
+		//addDocs();
+		
+		String body = "simone hhh sim->sim() ss trans() pluto var.var(); anti pippo";
+		System.out.println("before: "+body);
+		body = body.replaceAll("[\\w&&[\\S]]*[\\W&&[\\S]]+[\\w&&[\\S]]*", "");
+		System.out.println("after: "+body);
 
 	}
 

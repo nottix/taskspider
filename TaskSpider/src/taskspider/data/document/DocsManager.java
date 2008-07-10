@@ -66,6 +66,8 @@ public class DocsManager {
 		if((elements=page.getElements())!=null) {
 			body=this.getTagContent("body", elements);
 			if(body!=null) {
+				body = body.replaceAll("[\\w&&[\\S]]*[\\W&&[\\S]]+[\\w&&[\\S]]*", "");
+				System.out.println("body: "+body);
 				tempDoc.add(new Field("body", body, Field.Store.YES, Field.Index.TOKENIZED));
 			}
 			

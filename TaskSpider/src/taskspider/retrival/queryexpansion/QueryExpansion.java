@@ -1,13 +1,28 @@
 package taskspider.retrival.queryexpansion;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+import java.util.Vector;
 
-import org.apache.lucene.analysis.*;
-import org.apache.lucene.document.*;
-import org.apache.lucene.index.*;
-import org.apache.lucene.queryParser.*;
-import org.apache.lucene.search.*;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.Hits;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.QueryTermVector;
+import org.apache.lucene.search.Searcher;
+import org.apache.lucene.search.Similarity;
+import org.apache.lucene.search.TermQuery;
+
+import taskspider.util.properties.PropertiesReader;
+
+import com.google.soap.search.GoogleSearchFault;
 
 
 public class QueryExpansion
@@ -33,12 +48,14 @@ public class QueryExpansion
 	public static final String ROCCHIO_ALPHA_FLD = "rocchio.alpha";
 	public static final String ROCCHIO_BETA_FLD = "rocchio.beta";
 	public static final String ROCCHIO_GAMMA_FLD = "rocchio.gamma";
+	public static final String ROCCHIO_TERM_WEIGHT = "rocchio.weight";
 
 	private Properties prop;
 	private Analyzer analyzer;
 	private Searcher searcher;
 	private Similarity similarity;
-	private Vector<TermQuery> expandedTerms;    
+	private Vector<TermQuery> expandedTerms;
+	private int weightStatus;
 
 	/**
 	 * Creates a new instance of QueryExpansion
@@ -53,6 +70,7 @@ public class QueryExpansion
 		this.searcher = searcher;
 		this.similarity = similarity;
 		this.prop = prop;
+		this.weightStatus = Integer.parseInt(PropertiesReader.getProperty(ROCCHIO_TERM_WEIGHT));
 	}
 
 	/**
@@ -340,7 +358,10 @@ public class QueryExpansion
 					// Create TermQuery and add it to the collection
 					TermQuery termQuery = new TermQuery( term );
 					// Calculate and set boost
-					termQuery.setBoost( (factor/*weight*/)/docsTerms.size() );
+					if(weightStatus==1)
+						termQuery.setBoost( (factor*weight)/docsTerms.size() );
+					else
+						termQuery.setBoost( (factor)/docsTerms.size() );
 					terms.add( termQuery );
 				}
 			}

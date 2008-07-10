@@ -1,0 +1,49 @@
+\chapter{Performance}
+La fase finale dello sviluppo di tale progetto è stata la valutazione delle perfomance effettuando i relativi test. In particolare si è deciso di effettuare vari test utilizzando varie combinazioni dei parametri $\alpha \beta \gamma$. Inoltre sono stati utilizzati due meccanismi di \var{Query Expansion}: \var{Rocchio Pseudo-Relevance-Feedback} e \var{Wordnet}. Per lo spidering delle pagine si è utilizzato sia il metodo manuale di inserimento indirizzi di partenza e sia il metodo automatico (vedere \ref{cap:spider}). Con il metodo automatico si è riscontrato un elevato aumento della precisione, questo perchè si inizia lo spidering da pagine che hanno un'alta rilevanza al task.
+Di seguito sono riportati i vari test con i relativi valori.
+\section{Test 1}
+La prima prova è stata effettuata sul task \var{politica italiana}, lasciando agire il crawler per circa un ora dopodichè sono state fatte le query. Con un task di questo tipo sono state indicizzate oltre 3000 pagine web, il che rende la ricerca abbastanza veritiera.
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{||c|c|c|c|c|c|c|c|c||}
+\hline
+N	&$\alpha$	&$\beta$	&$\gamma$	&DocRel		&DocNonRel	&Rocchio	&Wordnet	&Normale	\\
+\hline
+\hline
+1	&1			&1			&0.5		&10			&4			&$0.41$		&$0.27$		&$0.27$	\\
+\hline
+2	&1			&1			&0			&10			&4			&$0.30$		&$0.27$		&$0.27$	\\
+\hline
+3	&1			&1			&0.5		&10			&10			&$0.52$		&$0.27$		&$0.27$	\\
+\hline
+4	&1			&1			&0			&10			&10			&$0.38$		&$0.27$		&$0.27$	\\
+\hline
+\end{tabular}
+\end{center}
+\caption{Test 1}
+\label{test_1}
+\end{table}
+Dalla tabella si può notare che la precisione di \var{Wordnet} e del metodo normale sono uguali, questo è dovuto al fatto che \var{Wordnet} in alcuni casi non riesce ad espandere perchè non conosce il termine.
+\section{Test 2}
+La seconda prova è stata effettuata sul task \var{music}, lasciando agire il crawler per circa un ora dopodichè sono state fatte le query. Con un task di questo tipo sono state indicizzate oltre 4000 pagine web.
+\begin{table}[H]
+\begin{center}
+\begin{tabular}{||c|c|c|c|c|c|c|c|c||}
+\hline
+N	&$\alpha$	&$\beta$	&$\gamma$	&DocRel		&DocNonRel	&Rocchio	&Wordnet	&Normale	\\
+\hline
+\hline
+1	&1			&1			&0.5		&10			&4			&$0.45$		&$0.55$		&$0.55$	\\
+\hline
+2	&1			&1			&0			&10			&4			&$0.33$		&$0.55$		&$0.55$	\\
+\hline
+3	&1			&1			&0.5		&10			&10			&$0.56$		&$0.55$		&$0.55$	\\
+\hline
+4	&1			&1			&0			&10			&10			&$0.41$		&$0.55$		&$0.55$	\\
+\hline
+\end{tabular}
+\end{center}
+\caption{Test 2}
+\label{test_2}
+\end{table}
+Tutti questi test sono stati eseguiti anche con la variante di \var{Rocchio} attivata ed i risultati sono stati più scadendi, infatti si sono ottenuti dei valori di precision più bassi di circa il 10\%.

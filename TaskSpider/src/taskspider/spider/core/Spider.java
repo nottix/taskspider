@@ -33,6 +33,15 @@ public class Spider {
 		}
 		
 		crawler.addClassifier(new StandardClassifier());
+		crawler.setDepthFirst(PropertiesReader.getProperty("scanType").equals("dfs"));
+		
+		DownloadParameters dp = new DownloadParameters();
+		dp.changeMaxPageSize(300);
+		dp.changeMaxThreads(8);
+		dp.changeObeyRobotExclusion(true);
+		dp.changeInteractive(false);
+		crawler.setDownloadParameters(dp);
+		
 		if((logPath = PropertiesReader.getProperty("logPath"))==null)
 			System.out.println("Error in properties file");
 		createLogger(logPath);
