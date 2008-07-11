@@ -6,14 +6,14 @@ Per avviare lo Spider è necessario indicargli un set di indirizzi di partenza, 
 \item il numero di Thread utilizzato nello spidering sono 8;
 \item la dimensione massima di una pagina è 300kb;
 \item abilitato l'utilizzo del file \var{robots.txt};
-\item politica di scansione delle pagine BFS (o DFS in base alla scelta dell'utente).
+\item politica di scansione delle pagine BFS (o DFS in base alla configurazione scelta dall'utente).
 \end{enumerate}
 Il funzionamento generale dello spider è riassunto nei passi seguenti:
 \begin{enumerate}
 \item Impostate le varie opzioni iniziali è possibile avviare lo Spider che inizierà ad esplorare ogni pagina web a partire dal primo indirizzo del set di partenza;
 \item durante la navigazione delle pagine, ad intervalli di tempo regolari viene avviato un secondo Thread che si occupa della scansione delle pagine esplorate per filtrare le pagine rilevanti dalle altre;
 	\begin{enumerate}
-	\item per ogni pagina rilevante si memorizzano tutte le sue informazioni che vengono utilizzate dal motore di retrival per l'indicizzazione; per avere dettagli vedere \ref{cap:retrival};
+	\item per ogni pagina rilevante si memorizzano tutte le sue informazioni che vengono utilizzate dal motore di Retrieval per l'indicizzazione; per avere dettagli vedere \ref{cap:Retrieval};
 	\item viene controlla la presenza della pagina nell'indice, e se presente si confrontano le date delle due pagine per sapere se è necessario sostituire la pagina nell'indice con una più aggiornata;
 	\end{enumerate}
 \item lo spidering potrebbe andare avanti all'infinito se non fosse per il sistema che si è adottato per interromperlo; tale sistema consiste nel verificare, ad intervalli di tempo regolari, se il numero di pagine recuperate al precedente controllo è uguale al numero di pagine recuperate all'ultimo controllo. Questa operazione viene eseguita per circa 10 volte, il che rende abbastanza affidabile l'interruzione dello spidering.

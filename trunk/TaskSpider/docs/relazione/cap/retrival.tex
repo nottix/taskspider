@@ -1,6 +1,6 @@
-\chapter{Retrival}\label{cap:retrival}
-Una parte fondamentale del progetto è proprio quella riguardante il Retrival, che gestisce tutte le operazioni riguardanti l'indice dei documenti e la ricerca. In particolare si è realizzato un sistema che sfrutta la libreria \var{Lucene} per gestire in modo semplice l'indice.
-\section{Documenti}\label{cap:retrival:docs}
+\chapter{Retrieval}\label{cap:retrieval}
+Una parte fondamentale del progetto è proprio quella riguardante il \var{Retrieval}, che gestisce tutte le operazioni riguardanti l'indice dei documenti e la ricerca. In particolare si è realizzato un sistema che sfrutta la libreria \var{Lucene} per gestire in modo semplice l'indice.
+\section{Documenti}\label{cap:retrieval:docs}
 Il software che si è realizzato si basa fortemente sulla gestione dei documenti registrati nell'indice, quindi risulta fondamentale riportare la struttura dei documenti.
 Ogni documento ha un riferimento uno ad uno con una pagina web recuperata, infatti vengono salvati ed indicizzati i seguenti campi:
 \begin{description}
@@ -9,16 +9,16 @@ Ogni documento ha un riferimento uno ad uno con una pagina web recuperata, infat
 \item[Description:] alcune pagine web hanno dei tag speciali che contengono la descrizione del contenuto della pagina;
 \item[Keywords:] le parole chiavi contenute nel tag keywords;
 \item[Keyphrases:] simili alle keywords, ma più rare;
-\item[Body:] contiene il contenuto del tag body, ovvero gran parte della pagina recuperata;
-\item[Date:] sarebbe la data di scadenza della pagina, viene utilizzata per l'eventuale aggiornamento del documento nell'indice;
+\item[Body:] contiene il contenuto del tag body (filtrato), ovvero gran parte della pagina recuperata;
+\item[Date:] sarebbe la data di scadenza della pagina, viene utilizzata per aggiornare un documento nell'indice in caso se ne reperisca uno più recente;
 \end{description}
 Tutti i campi elencati sono necessari per poter effettuare una ricerca sufficientemente rilevante per la portata del progetto. Come può essere facilmente intuito, il campo più importante risulta essere \var{Body}, oltre all'indispensabile \var{URL} che viene usato come chiave per il documento; infatti non possono coesistere nell'indice più documenti con lo stesso \var{URL}.
 Ogni documento che viene inserito nell'indice deve passare una serie di controlli di integrità. Nel caso del body vengono effettuate delle operazioni di pulitura del testo; in particolare vengono rimosse tutte le parole che riguardano codice o quant'altro. Grazie a quest'ultima operazione si ottiene un indice molto più pulito e rilevante per le ricerche.
-\section{Indicizzatore}\label{cap:retrival:indexer}
-Un'altra parte importante del software in questione è l'\var{Indicizzatore} (o \var{Indexer}) che si occupa della gestione vera e propria dell'indice dei documenti. In particolare, l'Indexer consente di aggiungere dei documenti nell'indice, evitando l'inserimento di duplicati (vedere \ref{cap:retrival:docs}); oltretutto è anche in grado di sfruttare il campo \var{Date} per un eventuale aggiornamento del documento.
+\section{Indicizzatore}\label{cap:retrieval:indexer}
+Un'altra parte importante del software in questione è l'\var{Indicizzatore} (o \var{Indexer}) che si occupa della gestione vera e propria dell'indice dei documenti. In particolare, l'Indexer consente di aggiungere dei documenti nell'indice, evitando l'inserimento di duplicati (vedere \ref{cap:retrieval:docs}); oltretutto è anche in grado di sfruttare il campo \var{Date} per un eventuale aggiornamento del documento. L'Indexer viene chiamato ad intervalli di tempo regolari per consentirgli di indicizzare tutti i documenti rilevanti trovati.
 Questo modulo è risultato essere uan parte del progetto in cui viene speso gran parte del tempo, a causa dell'elevato numero di nuovi documenti da aggiungere (o modificare) nell'indice.
-\section{Ricerca}\label{cap:retrival:searcher}
-La ricerca è un altro tassello fondamentale per il raggiungimento degli obiettivi del progetto; infatti è necessario ricercare sia per filtrare i documenti in base al task e sia effettuare delle ricerche sui documenti filtrati. Per tali motivi sono stati realizzati due moduli, uno per ogni tipo di ricerca.
+\section{Ricerca}\label{cap:retrieval:searcher}
+La ricerca è un altro tassello fondamentale per il raggiungimento degli obiettivi del progetto; infatti la ricerca è necessaria sia per filtrare i documenti in base al task e sia effettuare delle ricerche sui documenti filtrati. Per tali motivi sono stati realizzati due moduli, uno per ogni tipo di ricerca.
 \subsection{Ricerca task}
 Il primo tipo di ricerca genera una query a partire dal task richiesto, in particolare vengono espletati i seguenti passi:
 \begin{enumerate}
@@ -59,7 +59,7 @@ Il funzionamento della ricerca nell indice è riportato di seguito:
 \item viene inizializzato il modulo di ricerca nell'indice;
 \item eventualmente si pulisce la stringa di query che potrebbe contenere caratteri speciali come \code{\%20}, dovuti alla pagina jsp;
 \item si avvia la ricerca con la query ricevuta;
-\item in caso di Rocchio i risultati ottenuti vengono utilizzati per l'espansione della query (in caso di Wordnet si espande chiamando il modulo adeguato);
+\item in caso di Rocchio i risultati ottenuti vengono utilizzati per l'espansione della query. In caso di Wordnet, invece, si espande chiamando il modulo adeguato;
 \item si effettua la ricerca con la nuova query espansa;
 \end{enumerate}
 \paragraph{Wordnet}

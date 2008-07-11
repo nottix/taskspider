@@ -1,4 +1,4 @@
-package taskspider.retrival.queryexpansion;
+package taskspider.retrieval.queryexpansion;
 
 import java.io.IOException;
 import java.util.Collections;

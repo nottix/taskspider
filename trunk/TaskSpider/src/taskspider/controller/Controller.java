@@ -15,9 +15,9 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.Query;
 
-import taskspider.retrival.core.Indexer;
-import taskspider.retrival.core.TermSearcher;
-import taskspider.retrival.wordnet.Syns2Index;
+import taskspider.retrieval.core.Indexer;
+import taskspider.retrieval.core.TermSearcher;
+import taskspider.retrieval.wordnet.Syns2Index;
 import taskspider.spider.core.RootsSites;
 import taskspider.spider.core.Spider;
 import taskspider.spider.core.SpiderExplorer;

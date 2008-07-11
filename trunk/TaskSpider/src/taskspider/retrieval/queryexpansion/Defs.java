@@ -4,7 +4,7 @@
  * Created on October 25, 2004, 6:31 PM
  */
 
-package taskspider.retrival.queryexpansion;
+package taskspider.retrieval.queryexpansion;
 
 /**
  *
