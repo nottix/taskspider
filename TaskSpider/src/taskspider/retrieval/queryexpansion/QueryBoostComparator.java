@@ -6,7 +6,7 @@
  * @author Neil O. Rouben
  */
 
-package taskspider.retrival.queryexpansion;
+package taskspider.retrieval.queryexpansion;
 
 import java.util.*;
 

@@ -1,4 +1,4 @@
-package taskspider.retrival.core;
+package taskspider.retrieval.core;
 
 import java.io.IOException;
 import java.util.StringTokenizer;

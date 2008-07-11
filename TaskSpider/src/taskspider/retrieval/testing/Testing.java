@@ -1,7 +1,7 @@
 /**
  * @author Simone Notargiacomo, Giuseppe Schipani
  */
-package taskspider.retrival.testing;
+package taskspider.retrieval.testing;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

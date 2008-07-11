@@ -26,8 +26,8 @@ import org.apache.lucene.store.*;
 import taskspider.spider.core.*;
 import taskspider.util.properties.*;
 import taskspider.data.document.*;
-import taskspider.retrival.core.*;
-import taskspider.retrival.wordnet.*;
+import taskspider.retrieval.core.*;
+import taskspider.retrieval.wordnet.*;
 
 /**
  * @author Simone Notargiacomo, Giuseppe Schipani

@@ -1,7 +1,7 @@
 /**
  * @author Simone Notargiacomo, Giuseppe Schipani
  */
-package taskspider.retrival.core;
+package taskspider.retrieval.core;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,8 +19,8 @@ import org.apache.lucene.search.Similarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-import taskspider.retrival.queryexpansion.QueryExpansion;
-import taskspider.retrival.wordnet.SynExpand;
+import taskspider.retrieval.queryexpansion.QueryExpansion;
+import taskspider.retrieval.wordnet.SynExpand;
 import taskspider.util.debug.Debug;
 import taskspider.util.properties.PropertiesReader;
 
@@ -45,7 +45,7 @@ public class TermSearcher {
 			indexPath = PropertiesReader.getProperty("indexPath")+filename;
 			Debug.println("IndexPath: "+indexPath, 1);
 			indexDir = FSDirectory.getDirectory(indexPath);
-			this.task = filename;
+			task = filename;
 			isearcher = null;
 			result = null;
 		} catch (IOException e) {

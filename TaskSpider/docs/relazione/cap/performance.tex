@@ -2,7 +2,7 @@
 La fase finale dello sviluppo di tale progetto è stata la valutazione delle perfomance effettuando i relativi test. In particolare si è deciso di effettuare vari test utilizzando varie combinazioni dei parametri $\alpha \beta \gamma$. Inoltre sono stati utilizzati due meccanismi di \var{Query Expansion}: \var{Rocchio Pseudo-Relevance-Feedback} e \var{Wordnet}. Per lo spidering delle pagine si è utilizzato sia il metodo manuale di inserimento indirizzi di partenza e sia il metodo automatico (vedere \ref{cap:spider}). Con il metodo automatico si è riscontrato un elevato aumento della precisione, questo perchè si inizia lo spidering da pagine che hanno un'alta rilevanza al task.
 Di seguito sono riportati i vari test con i relativi valori.
 \section{Test 1}
-La prima prova è stata effettuata sul task \var{politica italiana}, lasciando agire il crawler per circa un ora dopodichè sono state fatte le query. Con un task di questo tipo sono state indicizzate oltre 3000 pagine web, il che rende la ricerca abbastanza veritiera.
+La prima prova è stata effettuata sul task \var{music}, lasciando agire il crawler per circa un ora dopodichè sono state fatte le query. Con un task di questo tipo sono state indicizzate oltre 3000 pagine web, il che rende la ricerca abbastanza veritiera. I link iniziali sono stati specificati a mano, ovvero: \url{http://www.mtv.com}, \url{http://www.myspace.com}; il che ha reso la precisione più bassa rispetto all'utilizzo degli indirizzi automatici.
 \begin{table}[H]
 \begin{center}
 \begin{tabular}{||c|c|c|c|c|c|c|c|c||}
@@ -25,7 +25,7 @@ N	&$\alpha$	&$\beta$	&$\gamma$	&DocRel		&DocNonRel	&Rocchio	&Wordnet	&Normale	\\
 \end{table}
 Dalla tabella si può notare che la precisione di \var{Wordnet} e del metodo normale sono uguali, questo è dovuto al fatto che \var{Wordnet} in alcuni casi non riesce ad espandere perchè non conosce il termine.
 \section{Test 2}
-La seconda prova è stata effettuata sul task \var{music}, lasciando agire il crawler per circa un ora dopodichè sono state fatte le query. Con un task di questo tipo sono state indicizzate oltre 4000 pagine web.
+La seconda prova è stata effettuata sul task \var{politica italiana}, lasciando agire il crawler per circa un ora dopodichè sono state fatte le query. Con un task di questo tipo sono state indicizzate oltre 4000 pagine web.
 \begin{table}[H]
 \begin{center}
 \begin{tabular}{||c|c|c|c|c|c|c|c|c||}

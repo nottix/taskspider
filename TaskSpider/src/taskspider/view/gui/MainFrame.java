@@ -35,7 +35,7 @@ import org.lobobrowser.main.PlatformInit;
 
 import taskspider.controller.BrowserControl;
 import taskspider.controller.Controller;
-import taskspider.retrival.core.TermSearcher;
+import taskspider.retrieval.core.TermSearcher;
 import taskspider.util.debug.Debug;
 import taskspider.util.properties.PropertiesReader;
 import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
