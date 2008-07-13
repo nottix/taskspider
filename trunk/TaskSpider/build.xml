@@ -23,12 +23,27 @@
 		</fileset>
 	</path>
 
+	<target name="Run">
+		<java fork="yes" classname="taskspider.view.gui.MainFrame" failonerror="true">
+			<arg value="-h"/>
+			<classpath>
+				<pathelement location="${bin}"/>
+				<path refid="compile.classpath"/>
+			</classpath>
+		</java>
+	</target>
+	
 	<target name="Compila" >
 		<mkdir dir="${buildweb}/WEB-INF/classes"/>
 		<javac debug="true" deprecation="true" destdir="${buildweb}/WEB-INF/classes" srcdir="${src}">
 			<classpath refid="compile.classpath">
 			</classpath>
 		</javac>
+		<javac debug="true" deprecation="true" destdir="${bin}" srcdir="${src}">
+			<classpath refid="compile.classpath">
+			</classpath>
+		</javac>
+
 	</target>
 
 	<target name="Deploy">
