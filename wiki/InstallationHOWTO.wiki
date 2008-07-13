@@ -42,4 +42,23 @@ cd TaskSpider
 
  `prologFilename`: path in cui è posizionato il file contenente le direttive di wordnet.
 
-7. 
+7. Assicurarsi che la variabile d'ambiene `JAVA_HOME` sia impostata e che punti al jdk 1.5, ad es:
+{{{
+JAVA_HOME="/usr/lib/jvm/java-1.5.0-sun/"
+export JAVA_HOME
+}}}
+8. Digitare il seguente comando per compilare:
+{{{
+ant DeleteClasses
+ant Compila
+}}}
+9. Per caricare la webapp assicurarsi che tomcat sia disattivo, in seguito caricare la webapp tramite:
+{{{
+ant Deploy
+sudo ant TomcatDeploy
+}}}
+10. Avviare tomcat e testare il funzionamento della webapp tramite il seguente comando:
+{{{
+firefox http://localhost:8180/taskspider/
+}}}
+11. Se tutto procede alla perfezione si può avviare il taskspider chiamando
